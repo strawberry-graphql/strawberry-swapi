@@ -1,0 +1,9 @@
+{
+  person(personId: 4) {
+    name
+    gender
+    homeworld {
+      name
+    }
+  }
+}

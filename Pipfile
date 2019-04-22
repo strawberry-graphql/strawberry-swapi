@@ -1,0 +1,21 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+strawberry-graphql = "==0.8.0"
+databases = {extras = ["sqlite"], version = "*"}
+alembic = "*"
+
+[dev-packages]
+"flake8" = "*"
+black = "*"
+pdbpp = "*"
+bpython = "*"
+
+[requires]
+python_version = "3.7"
+
+[pipenv]
+allow_prereleases = true

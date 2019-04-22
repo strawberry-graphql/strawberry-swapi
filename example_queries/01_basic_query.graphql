@@ -1,0 +1,5 @@
+{
+  person(personId: 4) {
+    name
+  }
+}
