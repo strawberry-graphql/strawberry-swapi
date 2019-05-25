@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-strawberry-graphql = "==0.8.0"
+strawberry-graphql = "==0.9.1"
 databases = {extras = ["sqlite"], version = "*"}
 alembic = "*"
 
