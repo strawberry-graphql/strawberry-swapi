@@ -3,10 +3,25 @@ import typing
 import strawberry
 
 from tables import people, starships
-from utils import get_connection_object
+from utils import get_generic_connection
 
-from .page_info import PageInfo
 from .node import Node
+from .page_info import PageInfo
+
+
+def _get_connection(
+    root,
+    info,
+    after: typing.Optional[str] = None,
+    first: typing.Optional[int] = None,
+    before: typing.Optional[str] = None,
+    last: typing.Optional[int] = None,
+):
+    from .people import PeopleConnection, PeopleEdge
+
+    return get_generic_connection(people, PeopleConnection, PeopleEdge)(
+        root, info, after, first, before, last
+    )
 
 
 @strawberry.type
@@ -27,28 +42,9 @@ class Starship(Node):
     MGLT: typing.Optional[int] = None
     starship_class: typing.Optional[str] = None
 
-    @strawberry.field
-    async def pilot_connection(
-        self,
-        info,
-        after: typing.Optional[str] = None,
-        first: typing.Optional[int] = None,
-        before: typing.Optional[str] = None,
-        last: typing.Optional[int] = None,
-    ) -> typing.Optional["PeopleConnection"]:
-        from .people import PeopleConnection, PeopleEdge
-
-        # TODO: filtering
-
-        return await get_connection_object(
-            people,
-            PeopleConnection,
-            PeopleEdge,
-            after=after,
-            first=first,
-            before=before,
-            last=last,
-        )
+    pilot_connection: typing.Optional["PeopleConnection"] = strawberry.field(
+        resolver=_get_connection
+    )
 
     @staticmethod
     def from_row(row):
