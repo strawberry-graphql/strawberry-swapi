@@ -3,11 +3,12 @@ import typing
 import strawberry
 
 from tables import database, people, planets, starships
-from utils import get_connection_object
+from utils import get_generic_connection
 
+from .node import Node
 from .page_info import PageInfo
 from .planets import Planet
-from .node import Node
+from .starships import PersonStarshipsConnection, PersonStarshipsEdge
 
 
 @strawberry.type
@@ -25,6 +26,14 @@ class Person(Node):
     eye_color: typing.Optional[str] = None
     birth_year: typing.Optional[str] = None
 
+    starship_connection: typing.Optional[
+        "PersonStarshipsConnection"
+    ] = strawberry.field(
+        resolver=get_generic_connection(
+            starships, PersonStarshipsConnection, PersonStarshipsEdge
+        )
+    )
+
     @strawberry.field
     async def homeworld(self, info) -> typing.Optional[Planet]:
         query = planets.select().where(planets.c.id == self.homeworld_id)
@@ -36,29 +45,6 @@ class Person(Node):
             return None
 
         return Planet.from_row(row)
-
-    @strawberry.field
-    async def starship_connection(
-        self,
-        info,
-        after: typing.Optional[str] = None,
-        first: typing.Optional[int] = None,
-        before: typing.Optional[str] = None,
-        last: typing.Optional[int] = None,
-    ) -> typing.Optional["PersonStarshipsConnection"]:
-        from .starships import PersonStarshipsConnection, StarshipsEdge
-
-        # TODO: filtering
-
-        return await get_connection_object(
-            starships,
-            PersonStarshipsConnection,
-            StarshipsEdge,
-            after=after,
-            first=first,
-            before=before,
-            last=last,
-        )
 
     @staticmethod
     def from_row(row):

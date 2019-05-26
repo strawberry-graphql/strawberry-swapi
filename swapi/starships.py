@@ -15,13 +15,14 @@ class Starship(Node):
     created: typing.Optional[str] = None
     edited: typing.Optional[str] = None
     model: typing.Optional[str] = None
-    cost_in_credits: typing.Optional[float] = None
+    cost_in_credits: typing.Optional[str] = None
     length: typing.Optional[float] = None
     max_atmosphering_speed: typing.Optional[int] = None
     hyperdrive_rating: typing.Optional[float] = None
     crew: typing.Optional[str] = None
     passengers: typing.Optional[str] = None
     cargo_capacity: typing.Optional[float] = None
+    manufacturers: typing.Optional[typing.List[str]] = None
     consumables: typing.Optional[str] = None
     MGLT: typing.Optional[int] = None
     starship_class: typing.Optional[str] = None

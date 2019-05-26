@@ -1,3 +1,7 @@
+import typing
+from sqlalchemy import select
+
+from sqlalchemy import func
 from swapi.page_info import PageInfo
 
 from tables import database
@@ -19,7 +23,9 @@ async def get_connection_object(
     https://facebook.github.io/relay/graphql/connections.htm
     """
 
-    count = await database.fetch_val(query=table.count())
+    count = await database.fetch_val(
+        query=select([func.count()]).select_from(table)
+    )
 
     query = table.select().order_by(table.c.id)
 
@@ -44,3 +50,27 @@ async def get_connection_object(
         edges=[EdgeType.from_row(row) for row in rows],
         total_count=count,
     )
+
+
+def get_generic_connection(table, ConnectionType, EdgeType):
+    async def _connection(
+        root,
+        info,
+        after: typing.Optional[str] = None,
+        first: typing.Optional[int] = None,
+        before: typing.Optional[str] = None,
+        last: typing.Optional[int] = None,
+    ):
+        # TODO: filtering
+
+        return await get_connection_object(
+            table,
+            ConnectionType,
+            EdgeType,
+            after=after,
+            first=first,
+            before=before,
+            last=last,
+        )
+
+    return _connection
