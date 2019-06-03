@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "a046ef4cae8e64736295d8bb77e39d7d5c14f3922f56e8fa5cdf248b88b64274"
+            "sha256": "5a22b52f7b2431bf27b25365ff1b0ca91749188e595a9b2d43e57ad5221ea6af"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -155,11 +155,11 @@
         },
         "strawberry-graphql": {
             "hashes": [
-                "sha256:54edff338e7330c36119cdddfe97b111174e28f8d42ffd1d7a4ea68ebb067eb7",
-                "sha256:f8ad05a51769b38b25ae64ee7187daa73f89978d2032fc53be48e3a931e9a5ce"
+                "sha256:a0d08fae038639a351d0b37b373cf9f87c15f4d43de5e6fba5c19c26959e8ed2",
+                "sha256:f94ec13a78ab269f161c28519ea027561093dcc2e3450451572d0ef320437448"
             ],
             "index": "pypi",
-            "version": "==0.9.1"
+            "version": "==0.10.0"
         },
         "uvicorn": {
             "hashes": [
