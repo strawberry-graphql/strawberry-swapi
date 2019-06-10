@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "a046ef4cae8e64736295d8bb77e39d7d5c14f3922f56e8fa5cdf248b88b64274"
+            "sha256": "f0def37d41022a41f9607f2a43ab7f8455a742f98eb19f9059ca7712d3e407ec"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -68,16 +68,16 @@
         },
         "hupper": {
             "hashes": [
-                "sha256:cb33b8f1de73a3566f4bd7decc620d0c6de7d7da9cdf176b6ad310fe037d6106",
-                "sha256:fe8febd68cec7fbed174fcbb0b42c427f96c8a7471c1cd4999fc698dd8dc6c34"
+                "sha256:034c69d5ada9ce538f248ee02c3398660bfdfd2b06d12a43e2e7e4d6dcb6ed02",
+                "sha256:eed9b367f7b4c3891d3daed7dc851d2752ca617e99205dbf25dab8eedfc50cea"
             ],
-            "version": "==1.6.1"
+            "version": "==1.7"
         },
         "mako": {
             "hashes": [
-                "sha256:889c7f16d5388092d4c585cf9def19cad089e9f848a7c40e03394553048362a6"
+                "sha256:0cfa65de3a835e87eeca6ac856b3013aade55f49e32515f65d999f91a2324162"
             ],
-            "version": "==1.0.11"
+            "version": "==1.0.12"
         },
         "markupsafe": {
             "hashes": [
@@ -155,11 +155,11 @@
         },
         "strawberry-graphql": {
             "hashes": [
-                "sha256:54edff338e7330c36119cdddfe97b111174e28f8d42ffd1d7a4ea68ebb067eb7",
-                "sha256:f8ad05a51769b38b25ae64ee7187daa73f89978d2032fc53be48e3a931e9a5ce"
+                "sha256:89ee77dee28739349cae85c06f5d383df065936c032a2ef215a55c543253b89f",
+                "sha256:92dd48ca272df8c954ecf2abd5731ea3a81c148353298ec5646324440dcebd82"
             ],
             "index": "pypi",
-            "version": "==0.9.1"
+            "version": "==0.11.0"
         },
         "uvicorn": {
             "hashes": [
