@@ -6,6 +6,7 @@ dependencies = [
     "alembic>=1.8.1",
     "uvicorn>=0.18.3",
     "starlette>=0.20.4",
+    "prisma>=0.6.6",
 ]
 [project.optional-dependencies]
 

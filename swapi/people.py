@@ -5,6 +5,8 @@ import strawberry
 from tables import database, people, planets, starships
 from utils import get_generic_connection
 
+import prisma
+
 from .node import Node
 from .page_info import PageInfo
 from .planets import Planet
@@ -14,8 +16,8 @@ from .starships import PersonStarshipsConnection, PersonStarshipsEdge
 @strawberry.type
 class Person(Node):
     name: typing.Optional[str]
-    # used internally, maybe it should not be exposed on GraphQL
-    homeworld_id: int
+    homeworld_id: strawberry.Private[int]
+    # TODO: add these to the db
     created: typing.Optional[str] = None
     edited: typing.Optional[str] = None
     gender: typing.Optional[str] = None
@@ -47,20 +49,20 @@ class Person(Node):
         return Planet.from_row(row)
 
     @staticmethod
-    def from_row(row):
+    def from_row(row: prisma.models.people):
         return Person(
-            id=row[people.c.id],
-            name=row[people.c.name],
-            created=row[people.c.created],
-            edited=row[people.c.edited],
-            gender=row[people.c.gender],
-            skin_color=row[people.c.skin_color],
-            hair_color=row[people.c.hair_color],
-            height=row[people.c.height],
-            mass=row[people.c.mass],
-            eye_color=row[people.c.eye_color],
-            birth_year=row[people.c.birth_year],
-            homeworld_id=row[people.c.homeworld_id],
+            id=row.id,
+            name=row.name,
+            homeworld_id=row.homeworld_id,
+            gender=row.gender,
+            skin_color=row.skin_color,
+            hair_color=row.hair_color,
+            height=row.height,
+            mass=row.mass,
+            eye_color=row.eye_color,
+            birth_year=row.birth_year,
+            # created=row.created,
+            # edited=row.edited,
         )
 
 

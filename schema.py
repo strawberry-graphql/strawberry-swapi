@@ -6,6 +6,8 @@ from swapi.people import PeopleConnection, PeopleEdge, Person
 from swapi.planets import PlanetsConnection, PlanetsEdge
 from swapi.starships import StarshipsConnection, StarshipsEdge
 
+from prisma import Prisma
+
 from tables import database, movies, people, planets, starships
 from utils import get_connection_object
 
@@ -44,14 +46,18 @@ class Root:
         # TODO: relay ids
         id = id or person_id
 
-        query = people.select().where(people.c.id == id)
+        db = Prisma()
+        await db.connect()
 
-        row = await database.fetch_one(query=query)
+        person = await db.people.find_first()
 
-        if not row:
+
+        await db.disconnect()
+
+        if person is None:
             return None
 
-        return Person.from_row(row)
+        return Person.from_row(person)
 
     @strawberry.field
     async def all_people(
