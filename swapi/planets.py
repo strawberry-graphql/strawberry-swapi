@@ -1,9 +1,10 @@
 import typing
 
+import prisma
 import strawberry
 
-from .page_info import PageInfo
 from .node import Node
+from .page_info import PageInfo
 
 
 @strawberry.type
@@ -19,18 +20,18 @@ class Planet(Node):
     population: typing.Optional[float] = None
 
     @staticmethod
-    def from_row(row):
+    def from_row(row: prisma.models.planet)-> "Planet":
         return Planet(
-            id=row[planets.c.id],
-            name=row[planets.c.name],
-            created=row[planets.c.created],
-            edited=row[planets.c.edited],
-            gravity=row[planets.c.gravity],
-            surface_water=row[planets.c.surface_water],
-            diameter=row[planets.c.diameter],
-            rotation_period=row[planets.c.rotation_period],
-            orbital_period=row[planets.c.orbital_period],
-            population=row[planets.c.population],
+            id=strawberry.ID(str(row.id)),
+            name=row.name,
+            # created=row.created,
+            # edited=row.edited,
+            gravity=row.gravity,
+            surface_water=row.surface_water,
+            diameter=row.diameter,
+            rotation_period=row.rotation_period,
+            orbital_period=row.orbital_period,
+            population=row.population,
         )
 
 

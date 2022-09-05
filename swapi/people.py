@@ -1,11 +1,11 @@
 import typing
 
+import prisma
 import strawberry
-
+from strawberry.types.info import Info
 from utils import get_generic_connection
 
-import prisma
-
+from .context import Context
 from .node import Node
 from .page_info import PageInfo
 from .planets import Planet
@@ -34,16 +34,12 @@ class Person(Node):
     )
 
     @strawberry.field
-    async def homeworld(self, info) -> typing.Optional[Planet]:
-        query = planets.select().where(planets.c.id == self.homeworld_id)
+    async def homeworld(self,  info: Info[Context, None]) -> typing.Optional[Planet]:
+        db = info.context["db"]
 
-        row = await database.fetch_one(query=query)
+        planet = await db.planet.find_first(where={"id": self.homeworld_id})
 
-        if not row:
-            print(self.homeworld_id)
-            return None
-
-        return Planet.from_row(row)
+        return Planet.from_row(planet) if planet is not None else None
 
     @staticmethod
     def from_row(row: prisma.models.people):
