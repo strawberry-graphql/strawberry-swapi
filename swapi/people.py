@@ -69,10 +69,8 @@ class PeopleEdge:
     cursor: str
 
     @staticmethod
-    def from_row(row):
-        id_ = row[people.c.id]
-
-        return PeopleEdge(cursor=id_, node=Person.from_row(row))
+    def from_row(row: prisma.models.people):
+        return PeopleEdge(cursor=str(row.id), node=Person.from_row(row))
 
 
 @strawberry.type

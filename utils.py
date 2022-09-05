@@ -19,31 +19,26 @@ async def get_connection_object(
     https://facebook.github.io/relay/graphql/connections.htm
     """
 
-    count = await database.fetch_val(
-        query=select([func.count()]).select_from(table)
-    )
-
-    query = table.select().order_by(table.c.id)
+    count = await table.count()
+    data = await table.find_many(cursor=after, order={
+            "id": "asc"
+        }, take=first)
 
     # TODO: not sure this is 100% correct
     # TODO: fetch if has next/prev pages
 
-    limit = first or last or 10
-    offset = count - last if last else 0
 
-    query = query.limit(limit).offset(offset)
+    # if after:
+    #     query = query.where(table.c.id > after)
 
-    if after:
-        query = query.where(table.c.id > after)
+    # if before:
+    #     query = query.where(table.c.id < before)
 
-    if before:
-        query = query.where(table.c.id < before)
-
-    rows = await database.fetch_all(query=query)
+    # rows = await database.fetch_all(query=query)
 
     return ConnectionType(
         page_info=PageInfo(has_next_page=False, has_previous_page=False),
-        edges=[EdgeType.from_row(row) for row in rows],
+        edges=[EdgeType.from_row(row) for row in data],
         total_count=count,
     )
 

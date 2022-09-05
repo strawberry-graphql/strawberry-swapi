@@ -1,7 +1,9 @@
 import typing
 
 import strawberry
+from strawberry.types.info import Info
 
+from swapi.context import Context
 from swapi.film import FilmsConnection, FilmsEdge
 from swapi.people import PeopleConnection, PeopleEdge, Person
 from swapi.planets import PlanetsConnection, PlanetsEdge
@@ -14,7 +16,7 @@ class Root:
     @strawberry.field
     async def all_films(
         self,
-        info,
+        info: Info[Context, None],
         after: typing.Optional[str] = None,
         first: typing.Optional[int] = None,
         before: typing.Optional[str] = None,
@@ -33,7 +35,7 @@ class Root:
     @strawberry.field
     async def person(
         self,
-        info,
+        info: Info[Context, None],
         id: typing.Optional[strawberry.ID] = None,
         person_id: typing.Optional[strawberry.ID] = None,
     ) -> typing.Optional[Person]:
@@ -46,26 +48,26 @@ class Root:
         db = info.context["db"]
 
         person = await db.people.find_first(where={
-            "id": int(id)
+            "id": int(id or person_id)  # type: ignore - we know it's not None
         })
 
 
-        if person is None:
-            return None
-
-        return Person.from_row(person)
+        return Person.from_row(person) if person is not None else None
 
     @strawberry.field
     async def all_people(
         self,
-        info,
+        info: Info[Context, None],
         after: typing.Optional[str] = None,
         first: typing.Optional[int] = None,
         before: typing.Optional[str] = None,
         last: typing.Optional[int] = None,
     ) -> typing.Optional[PeopleConnection]:
+        db = info.context["db"]
+
+
         return await get_connection_object(
-            people,
+            db.people,
             PeopleConnection,
             PeopleEdge,
             after=after,
