@@ -19,22 +19,30 @@ async def get_connection_object(
     https://facebook.github.io/relay/graphql/connections.htm
     """
 
+    if first is None and last is  None:
+        first = 10
+
+    take = first
+    cursor = after
+
+    if take is None:
+        assert last is not None
+
+        take = -last
+        cursor = before
+
     count = await table.count()
-    data = await table.find_many(cursor=after, order={
+    data = await table.find_many(
+        cursor={"id": int(cursor)} if cursor else None,
+        take=take,
+        # skip the cursor
+        skip=1 if cursor else 0,
+        order={
             "id": "asc"
-        }, take=first)
+        },
+    )
 
-    # TODO: not sure this is 100% correct
     # TODO: fetch if has next/prev pages
-
-
-    # if after:
-    #     query = query.where(table.c.id > after)
-
-    # if before:
-    #     query = query.where(table.c.id < before)
-
-    # rows = await database.fetch_all(query=query)
 
     return ConnectionType(
         page_info=PageInfo(has_next_page=False, has_previous_page=False),

@@ -15,7 +15,7 @@ model film {
   opening_crawl   String
   director        String
   producer        String
-  release_date    DateTime
+  // release_date    DateTime?
   film_characters film_characters[]
   film_planets    film_planets[]
   film_species    film_species[]

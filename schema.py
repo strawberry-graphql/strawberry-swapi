@@ -22,8 +22,10 @@ class Root:
         before: typing.Optional[str] = None,
         last: typing.Optional[int] = None,
     ) -> typing.Optional[FilmsConnection]:
+        db = info.context["db"]
+
         return await get_connection_object(
-            movies,
+            db.film,
             FilmsConnection,
             FilmsEdge,
             after=after,
@@ -79,14 +81,16 @@ class Root:
     @strawberry.field
     async def all_planets(
         self,
-        info,
+        info: Info[Context, None],
         after: typing.Optional[str] = None,
         first: typing.Optional[int] = None,
         before: typing.Optional[str] = None,
         last: typing.Optional[int] = None,
     ) -> typing.Optional[PlanetsConnection]:
+        db = info.context["db"]
+
         return await get_connection_object(
-            planets,
+            db.planet,
             PlanetsConnection,
             PlanetsEdge,
             after=after,
@@ -98,14 +102,16 @@ class Root:
     @strawberry.field
     async def all_starships(
         self,
-        info,
+        info: Info[Context, None],
         after: typing.Optional[str] = None,
         first: typing.Optional[int] = None,
         before: typing.Optional[str] = None,
         last: typing.Optional[int] = None,
     ) -> typing.Optional[StarshipsConnection]:
+        db = info.context["db"]
+
         return await get_connection_object(
-            starships,
+            db.starship,
             StarshipsConnection,
             StarshipsEdge,
             after=after,

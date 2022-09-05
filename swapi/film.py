@@ -1,7 +1,7 @@
 import typing
 
+import prisma
 import strawberry
-
 from utils import get_connection_object
 
 from .node import Node
@@ -66,6 +66,21 @@ class Film(Node):
             last=last,
         )
 
+    @classmethod
+    def from_row(cls, row: prisma.models.film) -> "Film":
+        return cls(
+            id=strawberry.ID(str(row.id)),
+            title=row.title,
+            episode_id=row.episode_id,
+            opening_crawl=row.opening_crawl,
+            director=row.director,
+            producers=row.producer.split(","),
+            release_date=None,
+            created=None,
+            edited=None,
+        )
+
+
 
 @strawberry.type
 class FilmsEdge:
@@ -73,22 +88,11 @@ class FilmsEdge:
     cursor: str
 
     @staticmethod
-    def from_row(row):
-        id_ = row[movies.c.id]
+    def from_row(row: prisma.models.film) -> "FilmsEdge":
 
         return FilmsEdge(
-            cursor=id_,
-            node=Film(
-                id=id_,
-                title=row[movies.c.title],
-                director=row[movies.c.director],
-                opening_crawl=row[movies.c.opening_crawl],
-                release_date=row[movies.c.release_date],
-                producers=[
-                    producer.strip()
-                    for producer in row[movies.c.producer].split(",")
-                ],
-            ),
+            cursor=str(row.id   ),
+            node=Film.from_row(row)
         )
 
 
@@ -97,4 +101,3 @@ class FilmsConnection:
     page_info: PageInfo
     edges: typing.List[typing.Optional[FilmsEdge]]
     total_count: typing.Optional[int]
-    films: typing.List[typing.Optional[Film]] = None
