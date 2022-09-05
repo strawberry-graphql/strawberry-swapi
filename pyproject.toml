@@ -2,11 +2,10 @@
 requires-python = ">=3.7"
 dependencies = [
     "strawberry-graphql>=0.128.0.dev1662392858",
-    "databases[sqlite]>=0.6.1",
-    "alembic>=1.8.1",
     "uvicorn>=0.18.3",
-    "starlette>=0.20.4",
     "prisma>=0.6.6",
+    "fastapi>=0.82.0",
+    "pydantic>=1.10.2",
 ]
 [project.optional-dependencies]
 

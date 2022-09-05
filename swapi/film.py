@@ -2,7 +2,6 @@ import typing
 
 import strawberry
 
-from tables import movies, species
 from utils import get_connection_object
 
 from .node import Node

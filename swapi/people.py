@@ -2,7 +2,6 @@ import typing
 
 import strawberry
 
-from tables import database, people, planets, starships
 from utils import get_generic_connection
 
 import prisma
@@ -31,9 +30,7 @@ class Person(Node):
     starship_connection: typing.Optional[
         "PersonStarshipsConnection"
     ] = strawberry.field(
-        resolver=get_generic_connection(
-            starships, PersonStarshipsConnection, PersonStarshipsEdge
-        )
+        resolver=lambda: None
     )
 
     @strawberry.field

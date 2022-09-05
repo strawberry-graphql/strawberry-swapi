@@ -2,7 +2,6 @@ import typing
 
 import strawberry
 
-from tables import people, starships
 from utils import get_connection_object
 
 from .page_info import PageInfo

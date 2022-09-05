@@ -1,10 +1,6 @@
 import typing
-from sqlalchemy import select
 
-from sqlalchemy import func
 from swapi.page_info import PageInfo
-
-from tables import database
 
 
 async def get_connection_object(

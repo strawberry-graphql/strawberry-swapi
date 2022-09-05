@@ -2,7 +2,6 @@ import typing
 
 import strawberry
 
-from tables import species
 
 from .page_info import PageInfo
 

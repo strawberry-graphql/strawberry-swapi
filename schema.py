@@ -1,14 +1,11 @@
 import typing
 
 import strawberry
+
 from swapi.film import FilmsConnection, FilmsEdge
 from swapi.people import PeopleConnection, PeopleEdge, Person
 from swapi.planets import PlanetsConnection, PlanetsEdge
 from swapi.starships import StarshipsConnection, StarshipsEdge
-
-from prisma import Prisma
-
-from tables import database, movies, people, planets, starships
 from utils import get_connection_object
 
 
@@ -46,13 +43,12 @@ class Root:
         # TODO: relay ids
         id = id or person_id
 
-        db = Prisma()
-        await db.connect()
+        db = info.context["db"]
 
-        person = await db.people.find_first()
+        person = await db.people.find_first(where={
+            "id": int(id)
+        })
 
-
-        await db.disconnect()
 
         if person is None:
             return None

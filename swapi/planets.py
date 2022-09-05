@@ -2,8 +2,6 @@ import typing
 
 import strawberry
 
-from tables import planets
-
 from .page_info import PageInfo
 from .node import Node
 
