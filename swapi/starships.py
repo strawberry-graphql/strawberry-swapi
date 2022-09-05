@@ -35,7 +35,7 @@ class Starship(Node):
         first: typing.Optional[int] = None,
         before: typing.Optional[str] = None,
         last: typing.Optional[int] = None,
-    ) -> typing.Optional["PeopleConnection"]:
+    ) -> typing.Optional[strawberry.LazyType["PeopleConnection", ".people"]]:
         from .people import PeopleConnection, PeopleEdge
 
         # TODO: filtering

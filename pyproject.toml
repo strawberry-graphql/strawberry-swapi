@@ -4,6 +4,8 @@ dependencies = [
     "strawberry-graphql>=0.128.0.dev1662392858",
     "databases[sqlite]>=0.6.1",
     "alembic>=1.8.1",
+    "uvicorn>=0.18.3",
+    "starlette>=0.20.4",
 ]
 [project.optional-dependencies]
 
