@@ -1,4 +1,4 @@
-import typing
+from typing import Annotated, Optional
 
 import strawberry
 from strawberry.types.info import Info
@@ -17,11 +17,11 @@ class Root:
     async def all_films(
         self,
         info: Info[Context, None],
-        after: typing.Optional[str] = None,
-        first: typing.Optional[int] = None,
-        before: typing.Optional[str] = None,
-        last: typing.Optional[int] = None,
-    ) -> typing.Optional[FilmsConnection]:
+        after: str | None = None,
+        first: int | None = None,
+        before: str | None = None,
+        last: int | None = None,
+    ) -> FilmsConnection | None:
         db = info.context["db"]
 
         return await get_connection_object(
@@ -38,9 +38,11 @@ class Root:
     async def person(
         self,
         info: Info[Context, None],
-        id: typing.Optional[strawberry.ID] = None,
-        person_id: typing.Optional[strawberry.ID] = None,
-    ) -> typing.Optional[Person]:
+        id: strawberry.ID | None = None,
+        person_id: Annotated[
+            strawberry.ID | None, strawberry.argument(name="personID")
+        ] = None,
+    ) -> Person | None:
         if id is None and person_id is None:
             raise ValueError("must provide id or personID")
 
@@ -49,10 +51,9 @@ class Root:
 
         db = info.context["db"]
 
-        person = await db.people.find_first(where={
-            "id": int(id or person_id)  # type: ignore - we know it's not None
-        })
-
+        person = await db.people.find_first(
+            where={"id": int(id or person_id)}  # type: ignore - we know it's not None
+        )
 
         return Person.from_row(person) if person is not None else None
 
@@ -60,13 +61,12 @@ class Root:
     async def all_people(
         self,
         info: Info[Context, None],
-        after: typing.Optional[str] = None,
-        first: typing.Optional[int] = None,
-        before: typing.Optional[str] = None,
-        last: typing.Optional[int] = None,
-    ) -> typing.Optional[PeopleConnection]:
+        after: str | None = None,
+        first: int | None = None,
+        before: str | None = None,
+        last: int | None = None,
+    ) -> PeopleConnection | None:
         db = info.context["db"]
-
 
         return await get_connection_object(
             db.people,
@@ -82,11 +82,11 @@ class Root:
     async def all_planets(
         self,
         info: Info[Context, None],
-        after: typing.Optional[str] = None,
-        first: typing.Optional[int] = None,
-        before: typing.Optional[str] = None,
-        last: typing.Optional[int] = None,
-    ) -> typing.Optional[PlanetsConnection]:
+        after: str | None = None,
+        first: int | None = None,
+        before: str | None = None,
+        last: int | None = None,
+    ) -> PlanetsConnection | None:
         db = info.context["db"]
 
         return await get_connection_object(
@@ -103,11 +103,11 @@ class Root:
     async def all_starships(
         self,
         info: Info[Context, None],
-        after: typing.Optional[str] = None,
-        first: typing.Optional[int] = None,
-        before: typing.Optional[str] = None,
-        last: typing.Optional[int] = None,
-    ) -> typing.Optional[StarshipsConnection]:
+        after: str | None = None,
+        first: int | None = None,
+        before: str | None = None,
+        last: int | None = None,
+    ) -> StarshipsConnection | None:
         db = info.context["db"]
 
         return await get_connection_object(

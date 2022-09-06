@@ -1,0 +1,16 @@
+{
+  allFilms(first: 100) {
+    pageInfo {
+      hasNextPage
+    }
+    films {
+      title
+      episodeID
+      openingCrawl
+      director
+      producers
+      releaseDate
+      id
+    }
+  }
+}

@@ -1,11 +1,11 @@
 import typing
 
+import prisma
 import strawberry
-
 from utils import get_connection_object
 
-from .page_info import PageInfo
 from .node import Node
+from .page_info import PageInfo
 
 
 @strawberry.type
@@ -92,10 +92,8 @@ class StarshipsConnection:
 @strawberry.type
 class PersonStarshipsEdge(StarshipsEdge):
     @staticmethod
-    def from_row(row):
-        id_ = row[starships.c.id]
-
-        return PersonStarshipsEdge(cursor=id_, node=Starship.from_row(row))
+    def from_row(row: prisma.models.starship):
+        return PersonStarshipsEdge(cursor=row.id, node=Starship.from_row(row))
 
 
 @strawberry.type

@@ -27,6 +27,8 @@ dev = [
     "rich>=12.5.1",
     "libcst>=0.4.7",
     "mypy>=0.971",
+    "typer>=0.6.1",
+    "httpx>=1.0.0b0",
 ]
 
 [build-system]

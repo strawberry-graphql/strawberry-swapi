@@ -14,27 +14,27 @@ from .starships import PersonStarshipsConnection, PersonStarshipsEdge
 
 @strawberry.type
 class Person(Node):
-    name: typing.Optional[str]
+    name: str | None
     homeworld_id: strawberry.Private[int]
     # TODO: add these to the db
-    created: typing.Optional[str] = None
-    edited: typing.Optional[str] = None
-    gender: typing.Optional[str] = None
-    skin_color: typing.Optional[str] = None
-    hair_color: typing.Optional[str] = None
+    created: str | None = None
+    edited: str | None = None
+    gender: str | None = None
+    skin_color: str | None = None
+    hair_color: str | None = None
     height: typing.Optional[int] = None
     mass: typing.Optional[float] = None
-    eye_color: typing.Optional[str] = None
-    birth_year: typing.Optional[str] = None
+    eye_color: str | None = None
+    birth_year: str | None = None
 
-    starship_connection: typing.Optional[
-        "PersonStarshipsConnection"
-    ] = strawberry.field(
-        resolver=lambda: None
+    starship_connection: PersonStarshipsConnection | None = strawberry.field(
+        resolver=get_generic_connection(
+            "starship", PersonStarshipsConnection, PersonStarshipsEdge
+        )
     )
 
     @strawberry.field
-    async def homeworld(self,  info: Info[Context, None]) -> typing.Optional[Planet]:
+    async def homeworld(self, info: Info[Context, None]) -> Planet | None:
         db = info.context["db"]
 
         planet = await db.planet.find_first(where={"id": self.homeworld_id})
@@ -44,7 +44,7 @@ class Person(Node):
     @staticmethod
     def from_row(row: prisma.models.people):
         return Person(
-            id=row.id,
+            id=strawberry.ID(str(row.id)),
             name=row.name,
             homeworld_id=row.homeworld_id,
             gender=row.gender,

@@ -1,17 +1,13 @@
-import typing
+from typing import Callable
 
+from strawberry.types.info import Info
+
+from swapi.context import Context
 from swapi.page_info import PageInfo
 
 
 async def get_connection_object(
-    table,
-    ConnectionType,
-    EdgeType,
-    *,
-    after=None,
-    before=None,
-    first=None,
-    last=None
+    table, ConnectionType, EdgeType, *, after=None, before=None, first=None, last=None
 ):
     """Returns a ConnectionType instance based on EdgeType and the passed params.
 
@@ -19,7 +15,7 @@ async def get_connection_object(
     https://facebook.github.io/relay/graphql/connections.htm
     """
 
-    if first is None and last is  None:
+    if first is None and last is None:
         first = 10
 
     take = first
@@ -37,9 +33,7 @@ async def get_connection_object(
         take=take,
         # skip the cursor
         skip=1 if cursor else 0,
-        order={
-            "id": "asc"
-        },
+        # order={"id": "asc"},
     )
 
     # TODO: fetch if has next/prev pages
@@ -51,16 +45,21 @@ async def get_connection_object(
     )
 
 
-def get_generic_connection(table, ConnectionType, EdgeType):
+def get_generic_connection(
+    table_name: str, ConnectionType: type, EdgeType: type
+) -> Callable:
     async def _connection(
-        root,
-        info,
-        after: typing.Optional[str] = None,
-        first: typing.Optional[int] = None,
-        before: typing.Optional[str] = None,
-        last: typing.Optional[int] = None,
+        root: object,
+        info: Info[Context, None],
+        after: str | None = None,
+        first: int | None = None,
+        before: str | None = None,
+        last: int | None = None,
     ):
-        # TODO: filtering
+        db = info.context["db"]
+
+        # TODO: filter
+        table = getattr(db, table_name)
 
         return await get_connection_object(
             table,
