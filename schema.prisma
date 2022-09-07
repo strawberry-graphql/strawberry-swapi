@@ -33,3 +33,18 @@ model Person {
   created    DateTime
   edited     DateTime
 }
+
+model Planet {
+  id              Int      @id
+  name            String
+  diameter        Int?
+  rotation_period Int?
+  orbital_period  Int?
+  gravity         String?
+  population      Float?
+  climates        String
+  terrains        String
+  surface_water   Float?
+  created         DateTime
+  edited          DateTime
+}

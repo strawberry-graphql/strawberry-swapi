@@ -4,7 +4,7 @@ from dataclasses import dataclass
 import prisma
 from dateutil import parser
 
-from .constants import FILMS_QUERY, PEOPLE_QUERY, REFERENCE_API_URL
+from .constants import FILMS_QUERY, PEOPLE_QUERY, PLANETS_QUERY, REFERENCE_API_URL
 from .utils.query import query
 
 
@@ -62,12 +62,40 @@ class Importer:
                 }
             )
 
+    async def _load_planets(self) -> None:
+        response = await query(
+            REFERENCE_API_URL,
+            PLANETS_QUERY.read_text(),
+        )
+
+        planets = response["data"]["allPlanets"]["planets"]
+
+        for planet in planets:
+            await self.db.planet.create(
+                data={
+                    "id": self._parse_id(planet["id"]),
+                    "name": planet["name"],
+                    "rotation_period": planet["rotationPeriod"],
+                    "orbital_period": planet["orbitalPeriod"],
+                    "diameter": planet["diameter"],
+                    "climates": ",".join(planet["climates"] or []),
+                    "gravity": planet["gravity"],
+                    "terrains": ",".join(planet["terrains"] or []),
+                    "surface_water": planet["surfaceWater"],
+                    "population": planet["population"],
+                    "created": parser.isoparse(planet["created"]),
+                    "edited": parser.isoparse(planet["edited"]),
+                }
+            )
+
     async def import_all(self) -> None:
         await self.db.film.delete_many()
         await self.db.person.delete_many()
+        await self.db.planet.delete_many()
 
         await self._load_films()
         await self._load_people()
+        await self._load_planets()
 
     @staticmethod
     def _parse_id(global_id: str) -> int:

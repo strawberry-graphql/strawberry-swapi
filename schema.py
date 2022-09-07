@@ -7,8 +7,8 @@ from strawberry.types.info import Info
 from swapi.context import Context
 from swapi.film import Film, FilmsConnection, FilmsEdge
 from swapi.people import PeopleConnection, PeopleEdge, Person
+from swapi.planets import PlanetsConnection, PlanetsEdge, Planet
 
-# from swapi.planets import PlanetsConnection, PlanetsEdge
 # from swapi.starships import StarshipsConnection, StarshipsEdge
 from utils import get_connection_object
 
@@ -124,6 +124,29 @@ class Root:
             before=before,
             last=last,
             attribute_name="people",
+        )
+
+    @strawberry.field
+    async def all_planets(
+        self,
+        info: Info[Context, None],
+        after: str | None = None,
+        first: int | None = None,
+        before: str | None = None,
+        last: int | None = None,
+    ) -> PlanetsConnection | None:
+        db = info.context["db"]
+
+        return await get_connection_object(
+            db.planet,
+            PlanetsConnection,
+            PlanetsEdge,
+            Planet,
+            after=after,
+            first=first,
+            before=before,
+            last=last,
+            attribute_name="planets",
         )
 
 
