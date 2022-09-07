@@ -1,3 +1,5 @@
+import json
+
 import prisma
 import strawberry
 
@@ -31,8 +33,8 @@ class Planet(Node):
             rotation_period=row.rotation_period,
             orbital_period=row.orbital_period,
             population=row.population,
-            climates=row.climates.split(","),
-            terrains=row.terrains.split(","),
+            climates=json.loads(row.climates),
+            terrains=json.loads(row.terrains),
             edited=format_datetime(row.edited),
             created=format_datetime(row.created),
         )

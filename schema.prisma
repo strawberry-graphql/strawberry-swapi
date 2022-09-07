@@ -48,3 +48,18 @@ model Planet {
   created         DateTime
   edited          DateTime
 }
+
+model Species {
+  id               Int    @id
+  name             String
+  classification   String
+  designation      String
+  average_height   Int?
+  average_lifespan Int?
+  eye_colors       String
+  hair_colors      String
+  skin_colors      String
+  language         String
+  created DateTime
+  edited  DateTime
+}

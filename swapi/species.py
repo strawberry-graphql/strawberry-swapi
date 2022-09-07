@@ -1,79 +1,55 @@
-import typing
+import json
 
+import prisma
 import strawberry
 
-
+from .node import Node
 from .page_info import PageInfo
+from .utils.datetime import format_datetime
 
 
 @strawberry.type
-class Specie:
+class Specie(Node):
     id: strawberry.ID
     name: str
-    created: typing.Optional[str] = None
-    edited: typing.Optional[str] = None
-    designation: typing.Optional[str] = None
-    eye_colors: typing.List[str] = None
-    skin_colors: typing.List[str] = None
-    hair_colors: typing.List[str] = None
-    language: typing.Optional[str] = None
-    average_lifespan: typing.Optional[int] = None
-    average_height: typing.Optional[int] = None
+    created: str | None = None
+    edited: str | None = None
+    classification: str | None = None
+    designation: str | None = None
+    eye_colors: list[str | None] | None = None
+    skin_colors: list[str | None] | None = None
+    hair_colors: list[str | None] | None = None
+    language: str | None = None
+    average_lifespan: int | None = None
+    average_height: int | None = None
+
+    @classmethod
+    def from_row(cls, row: prisma.models.Species) -> "Specie":
+        return cls(
+            id=strawberry.ID(Node.get_global_id("species", row.id)),
+            name=row.name,
+            designation=row.designation,
+            classification=row.classification,
+            eye_colors=json.loads(row.eye_colors),
+            skin_colors=json.loads(row.skin_colors),
+            hair_colors=json.loads(row.hair_colors),
+            language=row.language,
+            average_lifespan=row.average_lifespan,
+            average_height=row.average_height,
+            created=format_datetime(row.created),
+            edited=format_datetime(row.edited),
+        )
 
 
 @strawberry.type
 class SpeciesEdge:
-    node: typing.Optional[Specie]
+    node: Specie | None
     cursor: str
-
-    @staticmethod
-    def from_row(row):
-        id_ = row[species.c.id]
-
-        return SpeciesEdge(
-            cursor=id_,
-            node=Specie(
-                id=id_,
-                name=row[species.c.name],
-                created=row[species.c.created],
-                edited=row[species.c.edited],
-                designation=row[species.c.designation],
-                eye_colors=[
-                    color.strip()
-                    for color in row[species.c.eye_colors].split(",")
-                ],
-                skin_colors=[
-                    color.strip()
-                    for color in row[species.c.skin_colors].split(",")
-                ],
-                hair_colors=[
-                    color.strip()
-                    for color in row[species.c.hair_colors].split(",")
-                ],
-                language=row[species.c.language],
-                average_lifespan=row[species.c.average_lifespan],
-                average_height=row[species.c.average_height],
-            ),
-        )
 
 
 @strawberry.type
 class SpeciesConnection:
     page_info: PageInfo
-    edges: typing.List[SpeciesEdge]
+    edges: list[SpeciesEdge]
     total_count: int
-    species: typing.List[Specie] = None
-
-
-@strawberry.type
-class FilmSpeciesEdge(SpeciesEdge):
-    @staticmethod
-    def from_row(row):
-        id_ = row[species.c.id]
-
-        return FilmSpeciesEdge(cursor=id_, node=Specie.from_row(row))
-
-
-@strawberry.type
-class FilmSpeciesConnection(SpeciesConnection):
-    edges: typing.List[typing.Optional[FilmSpeciesEdge]]
+    species: list[Specie]

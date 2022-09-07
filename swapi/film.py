@@ -1,5 +1,6 @@
 import prisma
 import strawberry
+import json
 from strawberry.types.info import Info
 
 from swapi.utils.datetime import format_datetime
@@ -8,7 +9,7 @@ from utils import get_connection_object
 from .context import Context
 from .node import Node
 from .page_info import PageInfo
-from .species import FilmSpeciesConnection, SpeciesEdge
+# from .species import FilmSpeciesConnection, SpeciesEdge
 
 
 @strawberry.type(description="A single film.")
@@ -42,27 +43,6 @@ class Film(Node):
         )
     )
 
-    @strawberry.field
-    async def species_connection(
-        self,
-        info: Info[Context, None],
-        after: str | None = None,
-        first: int | None = None,
-        before: str | None = None,
-        last: int | None = None,
-    ) -> FilmSpeciesConnection | None:
-        # TODO: filtering
-
-        return await get_connection_object(
-            species,
-            FilmSpeciesConnection,
-            SpeciesEdge,
-            after=after,
-            first=first,
-            before=before,
-            last=last,
-        )
-
     @classmethod
     def from_row(cls, row: prisma.models.Film) -> "Film":
 
@@ -73,7 +53,7 @@ class Film(Node):
             episode_id=row.episode_id,
             opening_crawl=row.opening_crawl,
             director=row.director,
-            producers=row.producers.split(","),
+            producers=json.loads(row.producers),
             release_date=row.release_date.date().isoformat(),
             created=format_datetime(row.created),
             edited=format_datetime(row.edited),

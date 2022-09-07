@@ -1,10 +1,12 @@
+import json
 from base64 import b64decode
 from dataclasses import dataclass
 
 import prisma
 from dateutil import parser
 
-from .constants import FILMS_QUERY, PEOPLE_QUERY, PLANETS_QUERY, REFERENCE_API_URL
+from .constants import (FILMS_QUERY, PEOPLE_QUERY, PLANETS_QUERY,
+                        REFERENCE_API_URL, SPECIES_QUERY)
 from .utils.query import query
 
 
@@ -55,7 +57,7 @@ class Importer:
                     "episode_id": film["episodeID"],
                     "opening_crawl": film["openingCrawl"],
                     "director": film["director"],
-                    "producers": ",".join(film["producers"]),
+                    "producers": json.dumps(film["producers"]),
                     "release_date": parser.isoparse(film["releaseDate"]),
                     "created": parser.isoparse(film["created"]),
                     "edited": parser.isoparse(film["edited"]),
@@ -78,9 +80,9 @@ class Importer:
                     "rotation_period": planet["rotationPeriod"],
                     "orbital_period": planet["orbitalPeriod"],
                     "diameter": planet["diameter"],
-                    "climates": ",".join(planet["climates"] or []),
+                    "climates": json.dumps(planet["climates"] or []),
                     "gravity": planet["gravity"],
-                    "terrains": ",".join(planet["terrains"] or []),
+                    "terrains": json.dumps(planet["terrains"] or []),
                     "surface_water": planet["surfaceWater"],
                     "population": planet["population"],
                     "created": parser.isoparse(planet["created"]),
@@ -88,14 +90,42 @@ class Importer:
                 }
             )
 
+    async def _load_species(self) -> None:
+        response = await query(
+            REFERENCE_API_URL,
+            SPECIES_QUERY.read_text(),
+        )
+
+        species = response["data"]["allSpecies"]["species"]
+
+        for specie in species:
+            await self.db.species.create(
+                data={
+                    "id": self._parse_id(specie["id"]),
+                    "name": specie["name"],
+                    "classification": specie["classification"],
+                    "designation": specie["designation"],
+                    "average_height": specie["averageHeight"],
+                    "average_lifespan": specie["averageLifespan"],
+                    "eye_colors": json.dumps(specie["eyeColors"] or []),
+                    "hair_colors": json.dumps(specie["hairColors"] or []),
+                    "skin_colors": json.dumps(specie["skinColors"] or []),
+                    "language": specie["language"],
+                    "created": parser.isoparse(specie["created"]),
+                    "edited": parser.isoparse(specie["edited"]),
+                }
+            )
+
     async def import_all(self) -> None:
         await self.db.film.delete_many()
         await self.db.person.delete_many()
         await self.db.planet.delete_many()
+        await self.db.species.delete_many()
 
         await self._load_films()
         await self._load_people()
         await self._load_planets()
+        await self._load_species()
 
     @staticmethod
     def _parse_id(global_id: str) -> int:
