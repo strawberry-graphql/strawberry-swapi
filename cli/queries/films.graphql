@@ -11,6 +11,8 @@
       producers
       releaseDate
       id
+      created
+      edited
     }
   }
 }

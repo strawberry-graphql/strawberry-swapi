@@ -16,4 +16,20 @@ model Film {
   director      String
   producers     String
   release_date  DateTime
+  created       DateTime
+  edited        DateTime
+}
+
+model Person {
+  id         Int      @id
+  name       String
+  height     Int?
+  mass       Float?
+  eye_color  String
+  birth_year String
+  gender     String
+  hair_color String
+  skin_color String
+  created    DateTime
+  edited     DateTime
 }

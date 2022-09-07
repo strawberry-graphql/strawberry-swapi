@@ -1,89 +1,33 @@
 import asyncio
-from base64 import b64decode
-from datetime import datetime
-from pathlib import Path
 
-import httpx
 import prisma
 import typer
 from jsondiff import diff
 
+from .constants import ALL_QUERIES, REFERENCE_API_URL
+from .importer import Importer
+from .utils.query import query
 from .utils.wait_for_port import wait_for_port
-
-HERE = Path(__file__).parent
-
-REFERENCE_API_URL = "https://swapi-graphql.netlify.app/.netlify/functions/index"
-FILMS_QUERY = HERE / "queries/films.graphql"
-
-ALL_QUERIES = [FILMS_QUERY]
-
-
-def _parse_date(date: str) -> datetime:
-    return datetime.strptime(date, "%Y-%m-%d")
-
-
-def _parse_id(global_id: str) -> int:
-    return int(b64decode(global_id).split(b":")[1])
-
-
-async def _query(
-    url: str, query: str, variables: dict[str, dict] | None = None
-) -> dict[str, dict]:
-    async with httpx.AsyncClient() as client:
-        response = await client.post(
-            url,
-            json={"query": query, "variables": variables},
-            headers={"Accept": "application/json"},
-        )
-
-    response.raise_for_status()
-    return response.json()
-
-
-async def _load_films(db: prisma.Prisma) -> None:
-
-    response = await _query(
-        REFERENCE_API_URL,
-        FILMS_QUERY.read_text(),
-    )
-
-    films = response["data"]["allFilms"]["films"]
-
-    # create many is not supported by sqlite
-
-    for film in films:
-        await db.film.create(
-            data={
-                "id": _parse_id(film["id"]),
-                "title": film["title"],
-                "episode_id": film["episodeID"],
-                "opening_crawl": film["openingCrawl"],
-                "director": film["director"],
-                "producers": ",".join(film["producers"]),
-                "release_date": _parse_date(film["releaseDate"]),
-            }
-        )
-
 
 app = typer.Typer()
 
 
 @app.command()
-def load_data():
-    async def _load():
+def import_data():
+    async def _import():
         db = prisma.Prisma()
 
         await db.connect()
 
-        await db.film.delete_many()
+        importer = Importer(db)
 
         try:
-            await _load_films(db)
+            await importer.import_all()
         finally:
             await db.disconnect()
 
-    print("loading data...")
-    asyncio.run(_load())
+    print("importing data...")
+    asyncio.run(_import())
     print("loaded data")
 
 
@@ -96,18 +40,18 @@ def test_queries():
             print("The server is not running")
             return
 
-        for query in ALL_QUERIES:
-            text = query.read_text()
+        for query_path in ALL_QUERIES:
+            text = query_path.read_text()
 
             reference, implementation = await asyncio.gather(
-                _query(REFERENCE_API_URL, text),
-                _query("http://localhost:8000/graphql", text),
+                query(REFERENCE_API_URL, text),
+                query("http://localhost:8000/graphql", text),
             )
 
             difference = diff(reference, implementation, syntax="symmetric")
 
             if difference:
-                print(f"Query {query} is different")
+                print(f"Query {query_path} is different")
                 print(difference)
 
     print("running queries...")

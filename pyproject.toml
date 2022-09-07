@@ -30,6 +30,7 @@ dev = [
     "typer>=0.6.1",
     "httpx>=1.0.0b0",
     "jsondiff>=2.0.0",
+    "python-dateutil>=2.8.2",
 ]
 
 [tool.pdm.scripts]

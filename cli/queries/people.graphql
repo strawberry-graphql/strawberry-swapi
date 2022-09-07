@@ -1,0 +1,23 @@
+{
+  allPeople(first: 100) {
+    pageInfo {
+      hasNextPage
+    }
+    people {
+      id
+      name
+      birthYear
+      eyeColor
+      gender
+      hairColor
+      height
+      mass
+      skinColor
+      # homeworld {
+      #   id
+      # }
+      created
+      edited
+    }
+  }
+}
