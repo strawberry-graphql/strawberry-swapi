@@ -31,6 +31,10 @@ dev = [
     "httpx>=1.0.0b0",
 ]
 
+[tool.pdm.scripts]
+server = "uvicorn app:app --reload"
+cli = "python cli.py"
+
 [build-system]
 requires = ["pdm-pep517>=1.0.0"]
 build-backend = "pdm.pep517.api"

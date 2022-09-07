@@ -9,6 +9,8 @@ import httpx
 import prisma
 import typer
 
+from .utils.wait_for_port import wait_for_port
+
 HERE = Path(__file__).parent
 
 
@@ -18,39 +20,6 @@ def _parse_date(date: str) -> datetime:
 
 def _parse_id(global_id: str) -> int:
     return int(b64decode(global_id).split(b":")[1])
-
-
-async def wait_host_port(host, port, duration=10, delay=2):
-    """Repeatedly try if a port on a host is open until duration seconds passed
-
-    Parameters
-    ----------
-    host : str
-        host ip address or hostname
-    port : int
-        port number
-    duration : int, optional
-        Total duration in seconds to wait, by default 10
-    delay : int, optional
-        delay in seconds between each try, by default 2
-
-    Returns
-    -------
-    awaitable bool
-    """
-    tmax = time.time() + duration
-    while time.time() < tmax:
-        try:
-            _reader, writer = await asyncio.wait_for(
-                asyncio.open_connection(host, port), timeout=5
-            )
-            writer.close()
-            await writer.wait_closed()
-            return True
-        except Exception:
-            if delay:
-                await asyncio.sleep(delay)
-    return False
 
 
 async def _load_films(db: prisma.Prisma) -> None:
@@ -81,24 +50,23 @@ async def _load_films(db: prisma.Prisma) -> None:
             )
 
 
-async def _load():
-    db = prisma.Prisma()
-
-    await db.connect()
-
-    await db.film.delete_many()
-
-    try:
-        await _load_films(db)
-    finally:
-        await db.disconnect()
-
-
 app = typer.Typer()
 
 
 @app.command()
 def load_data():
+    async def _load():
+        db = prisma.Prisma()
+
+        await db.connect()
+
+        await db.film.delete_many()
+
+        try:
+            await _load_films(db)
+        finally:
+            await db.disconnect()
+
     print("loading data...")
     run(_load())
     print("loaded data")
@@ -108,6 +76,11 @@ def load_data():
 def test_queries():
     print("Ideally this command would run some queries against the the GraphQL API")
 
+    async def _test():
+        if not await wait_for_port("localhost", 8000):
+            print("The server is not running")
+            return
 
-if __name__ == "__main__":
-    app()
+    print("running queries...")
+    run(_test())
+    print("ran queries")
