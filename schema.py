@@ -6,7 +6,8 @@ from strawberry.types.info import Info
 
 from swapi.context import Context
 from swapi.film import Film, FilmsConnection, FilmsEdge
-# from swapi.people import PeopleConnection, PeopleEdge, Person
+from swapi.people import PeopleConnection, PeopleEdge, Person
+
 # from swapi.planets import PlanetsConnection, PlanetsEdge
 # from swapi.starships import StarshipsConnection, StarshipsEdge
 from utils import get_connection_object
@@ -33,27 +34,6 @@ from utils import get_connection_object
 #         )
 
 #         return Person.from_row(person) if person is not None else None
-
-#     @strawberry.field
-#     async def all_people(
-#         self,
-#         info: Info[Context, None],
-#         after: str | None = None,
-#         first: int | None = None,
-#         before: str | None = None,
-#         last: int | None = None,
-#     ) -> PeopleConnection | None:
-#         db = info.context["db"]
-
-#         return await get_connection_object(
-#             db.people,
-#             PeopleConnection,
-#             PeopleEdge,
-#             after=after,
-#             first=first,
-#             before=before,
-#             last=last,
-#         )
 
 #     @strawberry.field
 #     async def all_planets(
@@ -121,6 +101,29 @@ class Root:
             before=before,
             last=last,
             attribute_name="films",
+        )
+
+    @strawberry.field
+    async def all_people(
+        self,
+        info: Info[Context, None],
+        after: str | None = None,
+        first: int | None = None,
+        before: str | None = None,
+        last: int | None = None,
+    ) -> PeopleConnection | None:
+        db = info.context["db"]
+
+        return await get_connection_object(
+            db.person,
+            PeopleConnection,
+            PeopleEdge,
+            Person,
+            after=after,
+            first=first,
+            before=before,
+            last=last,
+            attribute_name="people",
         )
 
 

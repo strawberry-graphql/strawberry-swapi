@@ -63,6 +63,11 @@ class Film(Node):
 
     @classmethod
     def from_row(cls, row: prisma.models.Film) -> "Film":
+        # format created as 2014-12-10T14:23:31.880000Z
+        # format edited as 2014-12-20T19:49:45.256000Z
+        created = row.created.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+        edited = row.edited.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+
         return cls(
             # TODO: not sure why the original swapi uses films and not the type name
             id=strawberry.ID(Node.get_global_id("films", row.id)),
@@ -72,8 +77,8 @@ class Film(Node):
             director=row.director,
             producers=row.producers.split(","),
             release_date=row.release_date.date().isoformat(),
-            created=None,
-            edited=None,
+            created=created,
+            edited=edited,
         )
 
 
