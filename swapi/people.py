@@ -3,6 +3,8 @@ import typing
 import prisma
 import strawberry
 from strawberry.types.info import Info
+
+from swapi.utils.datetime import format_datetime
 from utils import get_generic_connection
 
 from .context import Context
@@ -54,8 +56,8 @@ class Person(Node):
             mass=row.mass,
             eye_color=row.eye_color,
             birth_year=row.birth_year,
-            # created=row.created,
-            # edited=row.edited,
+            created=format_datetime(row.created),
+            edited=format_datetime(row.edited),
         )
 
 
