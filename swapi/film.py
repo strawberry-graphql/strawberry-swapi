@@ -1,9 +1,9 @@
-import typing
-
 import prisma
 import strawberry
+from strawberry.types.info import Info
 from utils import get_connection_object
 
+from .context import Context
 from .node import Node
 from .page_info import PageInfo
 from .species import FilmSpeciesConnection, SpeciesEdge
@@ -11,49 +11,44 @@ from .species import FilmSpeciesConnection, SpeciesEdge
 
 @strawberry.type(description="A single film.")
 class Film(Node):
-    title: typing.Optional[str] = strawberry.field(
-        description="The title of this film."
-    )
-    episode_id: typing.Optional[int] = strawberry.field(
+    title: str | None = strawberry.field(description="The title of this film.")
+    episode_id: int | None = strawberry.field(
         name="episodeID", description="The episode number of this film."
     )
-    opening_crawl: typing.Optional[str] = strawberry.field(
+    opening_crawl: str | None = strawberry.field(
         description="The opening paragraphs at the beginning of this film."
     )
-    director: typing.Optional[str] = strawberry.field(
+    director: str | None = strawberry.field(
         description="The name of the director of this film."
     )
-    producers: typing.List[typing.Optional[str]] = strawberry.field(
+    producers: list[str | None] = strawberry.field(
         description="The name(s) of the producer(s) of this film."
     )
-    release_date: typing.Optional[str] = strawberry.field(
+    release_date: str | None = strawberry.field(
         description=(
-            "The ISO 8601 date format of film "
-            "release at original creator country."
+            "The ISO 8601 date format of film " "release at original creator country."
         )
     )
-    created: typing.Optional[str] = strawberry.field(
+    created: str | None = strawberry.field(
         description=(
-            "The ISO 8601 date format of the time that "
-            "this resource was created."
+            "The ISO 8601 date format of the time that " "this resource was created."
         )
     )
-    edited: typing.Optional[str] = strawberry.field(
+    edited: str | None = strawberry.field(
         description=(
-            "The ISO 8601 date format of the time that "
-            "this resource was edited."
+            "The ISO 8601 date format of the time that " "this resource was edited."
         )
     )
 
     @strawberry.field
     async def species_connection(
         self,
-        info,
-        after: typing.Optional[str] = None,
-        first: typing.Optional[int] = None,
-        before: typing.Optional[str] = None,
-        last: typing.Optional[int] = None,
-    ) -> typing.Optional["FilmSpeciesConnection"]:
+        info: Info[Context, None],
+        after: str | None = None,
+        first: int | None = None,
+        before: str | None = None,
+        last: int | None = None,
+    ) -> FilmSpeciesConnection | None:
         # TODO: filtering
 
         return await get_connection_object(
@@ -67,37 +62,36 @@ class Film(Node):
         )
 
     @classmethod
-    def from_row(cls, row: prisma.models.film) -> "Film":
+    def from_row(cls, row: prisma.models.Film) -> "Film":
         return cls(
-            id=strawberry.ID(str(row.id)),
+            # TODO: not sure why the original swapi uses films and not the type name
+            id=strawberry.ID(Node.get_global_id("films", row.id)),
             title=row.title,
             episode_id=row.episode_id,
             opening_crawl=row.opening_crawl,
             director=row.director,
-            producers=row.producer.split(","),
-            release_date=None,
+            producers=row.producers.split(","),
+            release_date=row.release_date.date().isoformat(),
             created=None,
             edited=None,
         )
 
 
-
+# TODO: make this generic
 @strawberry.type
 class FilmsEdge:
-    node: typing.Optional[Film]
+    node: Film | None
     cursor: str
 
     @staticmethod
-    def from_row(row: prisma.models.film) -> "FilmsEdge":
+    def from_row(row: prisma.models.Film) -> "FilmsEdge":
 
-        return FilmsEdge(
-            cursor=str(row.id   ),
-            node=Film.from_row(row)
-        )
+        return FilmsEdge(cursor=str(row.id), node=Film.from_row(row))
 
 
 @strawberry.type
 class FilmsConnection:
     page_info: PageInfo
-    edges: typing.List[typing.Optional[FilmsEdge]]
-    total_count: typing.Optional[int]
+    edges: list[FilmsEdge | None]
+    total_count: int | None
+    films: list[Film]

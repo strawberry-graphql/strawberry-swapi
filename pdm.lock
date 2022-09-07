@@ -235,6 +235,11 @@ dependencies = [
 ]
 
 [[package]]
+name = "jsondiff"
+version = "2.0.0"
+summary = "Diff JSON and JSON-like structures in Python"
+
+[[package]]
 name = "libcst"
 version = "0.4.7"
 requires_python = ">=3.7"
@@ -574,7 +579,7 @@ summary = "Backport of pathlib-compatible object wrapper for zip files"
 
 [metadata]
 lock_version = "4.0"
-content_hash = "sha256:03f2490cc0c4f65e5d0560f9e896f0abdc87073648d174e7e12bcd1ee492f33e"
+content_hash = "sha256:1ec1eb25cdc5bc868956d375244ec5b372e4092c39ee72f01fb4e9272be86cd5"
 
 [metadata.files]
 "ansicon 1.89.0" = [
@@ -787,6 +792,10 @@ content_hash = "sha256:03f2490cc0c4f65e5d0560f9e896f0abdc87073648d174e7e12bcd1ee
 "jinxed 1.2.0" = [
     {url = "https://files.pythonhosted.org/packages/23/22/9b3481b11f32aedf1cc403f290b92bd23327d04e359808482a69b2bc3665/jinxed-1.2.0-py2.py3-none-any.whl", hash = "sha256:cfc2b2e4e3b4326954d546ba6d6b9a7a796ddcb0aef8d03161d005177eb0d48b"},
     {url = "https://files.pythonhosted.org/packages/a5/3f/5b9182af8108c6af21183fa64883a1c7647450b6d4fa8ad359d4e93f6bd9/jinxed-1.2.0.tar.gz", hash = "sha256:032acda92d5c57cd216033cbbd53de731e6ed50deb63eb4781336ca55f72cda5"},
+]
+"jsondiff 2.0.0" = [
+    {url = "https://files.pythonhosted.org/packages/db/15/0d33d6e8114901a7b2a56d4190e3dc1803a195495ee4f9696c630e046c9e/jsondiff-2.0.0-py3-none-any.whl", hash = "sha256:689841d66273fc88fc79f7d33f4c074774f4f214b6466e3aff0e5adaf889d1e0"},
+    {url = "https://files.pythonhosted.org/packages/dd/13/2b691afe0a90fb930a32b8fc1b0fd6b5bdeaed459a32c5a58dc6654342da/jsondiff-2.0.0.tar.gz", hash = "sha256:2795844ef075ec8a2b8d385c4d59f5ea48b08e7180fce3cb2787be0db00b1fb4"},
 ]
 "libcst 0.4.7" = [
     {url = "https://files.pythonhosted.org/packages/26/dd/b4a60773aacf76b5138687c4d041cd967b31ab10f182dc1da8de3c142adb/libcst-0.4.7-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:617f7fa2610a8c86cf22d8d03416f25391383d05bd0ad1ca8ef68023ddd6b4f6"},

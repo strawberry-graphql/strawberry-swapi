@@ -1,38 +1,15 @@
 # from typing import Annotated, Optional
 
 # import strawberry
-# from strawberry.types.info import Info
+import strawberry
+from strawberry.types.info import Info
 
-# from swapi.context import Context
-# from swapi.film import FilmsConnection, FilmsEdge
+from swapi.context import Context
+from swapi.film import Film, FilmsConnection, FilmsEdge
 # from swapi.people import PeopleConnection, PeopleEdge, Person
 # from swapi.planets import PlanetsConnection, PlanetsEdge
 # from swapi.starships import StarshipsConnection, StarshipsEdge
-# from utils import get_connection_object
-
-
-# @strawberry.type
-# class Root:
-#     @strawberry.field
-#     async def all_films(
-#         self,
-#         info: Info[Context, None],
-#         after: str | None = None,
-#         first: int | None = None,
-#         before: str | None = None,
-#         last: int | None = None,
-#     ) -> FilmsConnection | None:
-#         db = info.context["db"]
-
-#         return await get_connection_object(
-#             db.film,
-#             FilmsConnection,
-#             FilmsEdge,
-#             after=after,
-#             first=first,
-#             before=before,
-#             last=last,
-#         )
+from utils import get_connection_object
 
 #     @strawberry.field
 #     async def person(
@@ -44,7 +21,7 @@
 #         ] = None,
 #     ) -> Person | None:
 #         if id is None and person_id is None:
-#             raise ValueError("must provide id or personID")
+#             raise ValueError("musclrovide id or personID")
 
 #         # TODO: relay ids
 #         id = id or person_id
@@ -121,10 +98,30 @@
 #         )
 
 
-import strawberry
-
 @strawberry.type
 class Root:
-    h: str
+    @strawberry.field
+    async def all_films(
+        self,
+        info: Info[Context, None],
+        after: str | None = None,
+        first: int | None = None,
+        before: str | None = None,
+        last: int | None = None,
+    ) -> FilmsConnection | None:
+        db = info.context["db"]
+
+        return await get_connection_object(
+            db.film,
+            FilmsConnection,
+            FilmsEdge,
+            Film,
+            after=after,
+            first=first,
+            before=before,
+            last=last,
+            attribute_name="films",
+        )
+
 
 schema = strawberry.Schema(query=Root)

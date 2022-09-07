@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Any, Callable
 
 from strawberry.types.info import Info
 
@@ -7,7 +7,16 @@ from swapi.page_info import PageInfo
 
 
 async def get_connection_object(
-    table, ConnectionType, EdgeType, *, after=None, before=None, first=None, last=None
+    table: Any,
+    ConnectionType: type,
+    EdgeType: type,
+    NodeType: type,
+    *,
+    after: str | None = None,
+    before: str | None = None,
+    first: int | None = None,
+    last: int | None = None,
+    attribute_name: str | None = None
 ):
     """Returns a ConnectionType instance based on EdgeType and the passed params.
 
@@ -38,15 +47,29 @@ async def get_connection_object(
 
     # TODO: fetch if has next/prev pages
 
+    nodes = [NodeType.from_row(row) for row in data]
+
+    kwargs = (
+        {
+            attribute_name: nodes,
+        }
+        if attribute_name
+        else {}
+    )
+
     return ConnectionType(
         page_info=PageInfo(has_next_page=False, has_previous_page=False),
-        edges=[EdgeType.from_row(row) for row in data],
+        edges=[EdgeType(node=node, cursor=node.id) for node in nodes],
         total_count=count,
+        **kwargs,
     )
 
 
 def get_generic_connection(
-    table_name: str, ConnectionType: type, EdgeType: type
+    table_name: str,
+    ConnectionType: type,
+    EdgeType: type,
+    NodeType: type,
 ) -> Callable:
     async def _connection(
         root: object,
@@ -65,6 +88,7 @@ def get_generic_connection(
             table,
             ConnectionType,
             EdgeType,
+            NodeType,
             after=after,
             first=first,
             before=before,
