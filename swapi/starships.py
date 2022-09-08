@@ -1,5 +1,4 @@
 import json
-import typing
 
 import prisma
 import strawberry
@@ -17,14 +16,14 @@ class Starship(Node):
     model: str | None = None
     cost_in_credits: float | None = None
     length: float | None = None
-    max_atmosphering_speed: typing.Optional[int] = None
+    max_atmosphering_speed: int | None = None
     hyperdrive_rating: float | None = None
     crew: str | None = None
     passengers: str | None = None
     cargo_capacity: float | None = None
     manufacturers: list[str] | None = None
     consumables: str | None = None
-    MGLT: typing.Optional[int] = None
+    MGLT: int | None = None
     starship_class: str | None = None
 
     @staticmethod
@@ -51,13 +50,13 @@ class Starship(Node):
 
 @strawberry.type
 class StarshipsEdge:
-    node: typing.Optional[Starship]
+    node: Starship | None
     cursor: str
 
 
 @strawberry.type
 class StarshipsConnection:
     page_info: PageInfo
-    edges: typing.List[StarshipsEdge]
-    total_count: typing.Optional[int]
+    edges: list[StarshipsEdge]
+    total_count: int | None
     starships: list[Starship | None]
