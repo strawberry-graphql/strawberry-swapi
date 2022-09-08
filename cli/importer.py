@@ -110,12 +110,12 @@ class Importer:
                             for vehicle in film["vehicleConnection"]["vehicles"]
                         ]
                     },
-                    # "planets": {
-                    #     "connect": [
-                    #         {"id": self._parse_id(planet["id"])}
-                    #         for planet in film["planetConnection"]["planets"]
-                    #     ]
-                    # },
+                    "planets": {
+                        "connect": [
+                            {"id": self._parse_id(planet["id"])}
+                            for planet in film["planetConnection"]["planets"]
+                        ]
+                    },
                     # "characters": {
                     #     "connect": [
                     #         {"id": self._parse_id(character["id"])}

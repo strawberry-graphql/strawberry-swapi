@@ -8,6 +8,7 @@ from .page_info import PageInfo
 from .species import Species, SpeciesEdge
 from .starships import Starship, StarshipsEdge
 from .vehicles import Vehicle, VehiclesEdge
+from .planets import Planet, PlanetsEdge
 from .utils.connections import get_connection_resolver
 from .utils.datetime import format_datetime
 
@@ -49,6 +50,19 @@ class FilmVehiclesConnection:
     edges: list[FilmVehiclesEdge | None]
     total_count: int | None
     vehicles: list[Vehicle]
+
+
+@strawberry.type
+class FilmPlanetsEdge(PlanetsEdge):
+    ...
+
+
+@strawberry.type
+class FilmPlanetsConnection:
+    page_info: PageInfo
+    edges: list[FilmPlanetsEdge | None]
+    total_count: int | None
+    planets: list[Planet]
 
 
 @strawberry.type(description="A single film.")
@@ -115,6 +129,19 @@ class Film(Node):
             FilmVehiclesEdge,
             Vehicle,
             attribute_name="vehicles",
+            get_additional_filters=lambda root: {
+                "films": {"some": {"id": Node.get_id(root)}}
+            },
+        )
+    )
+
+    planet_connection: FilmPlanetsConnection | None = strawberry.field(
+        resolver=get_connection_resolver(
+            "planet",
+            FilmPlanetsConnection,
+            FilmPlanetsEdge,
+            Planet,
+            attribute_name="planets",
             get_additional_filters=lambda root: {
                 "films": {"some": {"id": Node.get_id(root)}}
             },

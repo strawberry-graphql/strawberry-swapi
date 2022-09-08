@@ -22,6 +22,7 @@ model Film {
   species       Species[]
   starships     Starship[]
   vehicles      Vehicle[]
+  planets       Planet[]
 }
 
 model Person {
@@ -58,7 +59,8 @@ model Planet {
   surface_water   Float?
   created         DateTime
   edited          DateTime
-  Person          Person[]
+  people          Person[]
+  films           Film[]
 }
 
 model Species {
