@@ -18,6 +18,7 @@ model Film {
   release_date  DateTime
   created       DateTime
   edited        DateTime
+  characters    Person[]
 }
 
 model Person {
@@ -36,6 +37,7 @@ model Person {
   homeworld    Planet   @relation(fields: [homeworld_id], references: [id])
   species_id   Int?
   species      Species? @relation(fields: [species_id], references: [id])
+  films        Film[]
 }
 
 model Planet {
@@ -59,7 +61,7 @@ model Species {
   name             String
   classification   String
   designation      String
-  average_height   Int?
+  average_height   Float?
   average_lifespan Int?
   eye_colors       String
   hair_colors      String

@@ -1,9 +1,45 @@
 from typing import Any, Callable
 
+import strawberry
 from strawberry.types.info import Info
-
 from swapi.context import Context
 from swapi.page_info import PageInfo
+
+
+def get_connection_resolver(
+    table_name: str,
+    ConnectionType: type,
+    EdgeType: type,
+    NodeType: type,
+    attribute_name: str,
+    get_additional_filters: Callable[[object], dict[str, Any]] = lambda root: {},
+) -> Callable:
+    async def _resolve(
+        root,
+        info: Info[Context, None],
+        after: str | None = strawberry.UNSET,
+        first: int | None = strawberry.UNSET,
+        before: str | None = strawberry.UNSET,
+        last: int | None = strawberry.UNSET,
+    ) -> ConnectionType | None:  # type: ignore
+        db = info.context["db"]
+
+        additional_filters = get_additional_filters(root)
+
+        return await get_connection_object(
+            getattr(db, table_name),
+            ConnectionType,
+            EdgeType,
+            NodeType,
+            after=after,
+            first=first,
+            before=before,
+            last=last,
+            attribute_name=attribute_name,
+            additional_filters=additional_filters,
+        )
+
+    return _resolve
 
 
 async def get_connection_object(
@@ -12,17 +48,24 @@ async def get_connection_object(
     EdgeType: type,
     NodeType: type,
     *,
-    after: str | None = None,
-    before: str | None = None,
-    first: int | None = None,
-    last: int | None = None,
-    attribute_name: str | None = None
+    after: str | None = strawberry.UNSET,
+    before: str | None = strawberry.UNSET,
+    first: int | None = strawberry.UNSET,
+    last: int | None = strawberry.UNSET,
+    attribute_name: str | None = None,
+    additional_filters: dict[str, Any] = None
 ):
     """Returns a ConnectionType instance based on EdgeType and the passed params.
 
     This is based on the Relay Connection specification, see it here:
     https://facebook.github.io/relay/graphql/connections.htm
     """
+
+    after = after if after is not strawberry.UNSET else None
+    before = before if before is not strawberry.UNSET else None
+    first = first if first is not strawberry.UNSET else None
+    last = last if last is not strawberry.UNSET else None
+    additional_filters = additional_filters or {}
 
     if first is None and last is None:
         first = 10
@@ -36,12 +79,14 @@ async def get_connection_object(
         take = -last
         cursor = before
 
-    count = await table.count()
+    count = await table.count(where=additional_filters)
     data = await table.find_many(
         cursor={"id": int(cursor)} if cursor else None,
         take=take,
         # skip the cursor
         skip=1 if cursor else 0,
+        where=additional_filters,
+        # TODO: add this back
         # order={"id": "asc"},
     )
 

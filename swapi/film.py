@@ -1,14 +1,15 @@
+import json
+
 import prisma
 import strawberry
-import json
 from strawberry.types.info import Info
 
 from swapi.utils.datetime import format_datetime
-from utils import get_connection_object
 
 from .context import Context
 from .node import Node
 from .page_info import PageInfo
+
 # from .species import FilmSpeciesConnection, SpeciesEdge
 
 

@@ -21,7 +21,7 @@ class Species(Node):
     hair_colors: list[str | None] | None = None
     language: str | None = None
     average_lifespan: int | None = None
-    average_height: int | None = None
+    average_height: float | None = None
 
     @classmethod
     def from_row(cls, row: prisma.models.Species) -> "Species":

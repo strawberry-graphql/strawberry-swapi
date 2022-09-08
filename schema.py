@@ -1,4 +1,4 @@
-from typing import Annotated, Callable
+from typing import Annotated
 
 import strawberry
 from strawberry.types.info import Info
@@ -10,46 +10,14 @@ from swapi.people import PeopleConnection, PeopleEdge, Person
 from swapi.planets import Planet, PlanetsConnection, PlanetsEdge
 from swapi.species import Species, SpeciesConnection, SpeciesEdge
 from swapi.starships import Starship, StarshipsConnection, StarshipsEdge
+from swapi.utils.connections import get_connection_resolver
 from swapi.vehicles import Vehicle, VehiclesConnection, VehiclesEdge
-from utils import get_connection_object
-
-
-def _get_connection_resolver(
-    table_name: str,
-    ConnectionType: type,
-    EdgeType: type,
-    NodeType: type,
-    attribute_name: str,
-) -> Callable:
-    async def _resolve(
-        self,
-        info: Info[Context, None],
-        after: str | None = strawberry.UNSET,
-        first: int | None = strawberry.UNSET,
-        before: str | None = strawberry.UNSET,
-        last: int | None = strawberry.UNSET,
-    ) -> ConnectionType | None:  # type: ignore
-        db = info.context["db"]
-
-        return await get_connection_object(
-            getattr(db, table_name),
-            ConnectionType,
-            EdgeType,
-            NodeType,
-            after=after,
-            first=first,
-            before=before,
-            last=last,
-            attribute_name=attribute_name,
-        )
-
-    return _resolve
 
 
 @strawberry.type
 class Root:
     all_films: FilmsConnection | None = strawberry.field(
-        resolver=_get_connection_resolver(
+        resolver=get_connection_resolver(
             "film",
             FilmsConnection,
             FilmsEdge,
@@ -59,7 +27,7 @@ class Root:
     )
 
     all_people: PeopleConnection | None = strawberry.field(
-        resolver=_get_connection_resolver(
+        resolver=get_connection_resolver(
             "person",
             PeopleConnection,
             PeopleEdge,
@@ -69,7 +37,7 @@ class Root:
     )
 
     all_planets: PlanetsConnection | None = strawberry.field(
-        resolver=_get_connection_resolver(
+        resolver=get_connection_resolver(
             "planet",
             PlanetsConnection,
             PlanetsEdge,
@@ -79,7 +47,7 @@ class Root:
     )
 
     all_species: SpeciesConnection | None = strawberry.field(
-        resolver=_get_connection_resolver(
+        resolver=get_connection_resolver(
             "species",
             SpeciesConnection,
             SpeciesEdge,
@@ -89,7 +57,7 @@ class Root:
     )
 
     all_vehicles: VehiclesConnection | None = strawberry.field(
-        resolver=_get_connection_resolver(
+        resolver=get_connection_resolver(
             "vehicle",
             VehiclesConnection,
             VehiclesEdge,
@@ -99,7 +67,7 @@ class Root:
     )
 
     all_starships: StarshipsConnection | None = strawberry.field(
-        resolver=_get_connection_resolver(
+        resolver=get_connection_resolver(
             "starship",
             StarshipsConnection,
             StarshipsEdge,

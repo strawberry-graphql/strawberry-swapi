@@ -21,6 +21,12 @@
       }
       created
       edited
+      filmConnection {
+        totalCount
+        films {
+          id
+        }
+      }
     }
   }
 }

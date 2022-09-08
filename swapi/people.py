@@ -5,10 +5,12 @@ from strawberry.types.info import Info
 from swapi.utils.datetime import format_datetime
 
 from .context import Context
+from .film import Film, FilmsConnection, FilmsEdge
 from .node import Node
 from .page_info import PageInfo
 from .planets import Planet
 from .species import Species
+from .utils.connections import get_connection_resolver
 
 
 @strawberry.type
@@ -25,6 +27,21 @@ class Person(Node):
     mass: float | None = None
     eye_color: str | None = None
     birth_year: str | None = None
+
+    film_connection: FilmsConnection | None = strawberry.field(
+        resolver=get_connection_resolver(
+            "film",
+            FilmsConnection,
+            FilmsEdge,
+            Film,
+            attribute_name="films",
+            get_additional_filters=lambda root: {
+                "characters": {
+                    "some": {"id": {"equals": Node.get_id(root)}},
+                },
+            },
+        )
+    )
 
     # starship_connection: PersonStarshipsConnection | None = strawberry.field(
     #     resolver=get_generic_connection(

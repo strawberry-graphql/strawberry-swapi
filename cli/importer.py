@@ -49,6 +49,12 @@ class Importer:
                         if person["species"]
                         else None
                     ),
+                    "films": {
+                        "connect": [
+                            {"id": self._parse_id(film["id"])}
+                            for film in person["filmConnection"]["films"]
+                        ]
+                    },
                 }
             )
 
