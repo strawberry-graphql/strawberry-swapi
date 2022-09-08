@@ -104,12 +104,12 @@ class Importer:
                             for starship in film["starshipConnection"]["starships"]
                         ]
                     },
-                    # "vehicles": {
-                    #     "connect": [
-                    #         {"id": self._parse_id(vehicle["id"])}
-                    #         for vehicle in film["vehicleConnection"]["vehicles"]
-                    #     ]
-                    # },
+                    "vehicles": {
+                        "connect": [
+                            {"id": self._parse_id(vehicle["id"])}
+                            for vehicle in film["vehicleConnection"]["vehicles"]
+                        ]
+                    },
                     # "planets": {
                     #     "connect": [
                     #         {"id": self._parse_id(planet["id"])}
@@ -246,8 +246,8 @@ class Importer:
         await self._load_planets()
         await self._load_starships()
         await self._load_species()
-        await self._load_films()
         await self._load_vehicles()
+        await self._load_films()
         await self._load_people()
 
     @staticmethod

@@ -21,6 +21,7 @@ model Film {
   characters    Person[]
   species       Species[]
   starships     Starship[]
+  vehicles      Vehicle[]
 }
 
 model Person {
@@ -93,6 +94,7 @@ model Vehicle {
   created                DateTime
   edited                 DateTime
   pilots                 Person[]
+  films                  Film[]
 }
 
 model Starship {

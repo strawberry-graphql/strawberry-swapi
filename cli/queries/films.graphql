@@ -17,14 +17,18 @@
         totalCount
         species {
           id
-          name
         }
       }
       starshipConnection {
         totalCount
         starships {
           id
-          name
+        }
+      }
+      vehicleConnection {
+        totalCount
+        vehicles {
+          id
         }
       }
     }
