@@ -12,6 +12,7 @@ from .planets import Planet
 from .species import Species
 from .starships import Starship, StarshipsConnection, StarshipsEdge
 from .utils.connections import get_connection_resolver
+from .vehicles import Vehicle, VehiclesConnection, VehiclesEdge
 
 
 @strawberry.type
@@ -59,11 +60,20 @@ class Person(Node):
         )
     )
 
-    # starship_connection: PersonStarshipsConnection | None = strawberry.field(
-    #     resolver=get_generic_connection(
-    #         "starship", PersonStarshipsConnection, PersonStarshipsEdge
-    #     )
-    # )
+    vehicle_connection: VehiclesConnection | None = strawberry.field(
+        resolver=get_connection_resolver(
+            "vehicle",
+            VehiclesConnection,
+            VehiclesEdge,
+            Vehicle,
+            attribute_name="vehicles",
+            get_additional_filters=lambda root: {
+                "pilots": {
+                    "some": {"id": {"equals": Node.get_id(root)}},
+                },
+            },
+        )
+    )
 
     @strawberry.field
     async def homeworld(self, info: Info[Context, None]) -> Planet | None:

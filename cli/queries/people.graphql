@@ -33,6 +33,13 @@
           id
         }
       }
+
+      vehicleConnection {
+        totalCount
+        vehicles {
+          id
+        }
+      }
     }
   }
 }

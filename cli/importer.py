@@ -61,6 +61,12 @@ class Importer:
                             for starship in person["starshipConnection"]["starships"]
                         ]
                     },
+                    "vehicles": {
+                        "connect": [
+                            {"id": self._parse_id(vehicle["id"])}
+                            for vehicle in person["vehicleConnection"]["vehicles"]
+                        ]
+                    },
                 }
             )
 
@@ -211,8 +217,8 @@ class Importer:
         await self._load_species()
         await self._load_films()
         await self._load_starships()
-        await self._load_people()
         await self._load_vehicles()
+        await self._load_people()
 
     @staticmethod
     def _parse_id(global_id: str) -> int:

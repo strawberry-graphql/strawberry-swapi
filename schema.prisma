@@ -39,6 +39,7 @@ model Person {
   species      Species?   @relation(fields: [species_id], references: [id])
   films        Film[]
   starships    Starship[]
+  vehicles     Vehicle[]
 }
 
 model Planet {
@@ -88,6 +89,7 @@ model Vehicle {
   consumables            String
   created                DateTime
   edited                 DateTime
+  pilots                 Person[]
 }
 
 model Starship {
