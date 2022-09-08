@@ -10,6 +10,7 @@ from .node import Node
 from .page_info import PageInfo
 from .planets import Planet
 from .species import Species
+from .starships import Starship, StarshipsConnection, StarshipsEdge
 from .utils.connections import get_connection_resolver
 
 
@@ -37,6 +38,21 @@ class Person(Node):
             attribute_name="films",
             get_additional_filters=lambda root: {
                 "characters": {
+                    "some": {"id": {"equals": Node.get_id(root)}},
+                },
+            },
+        )
+    )
+
+    starship_connection: StarshipsConnection | None = strawberry.field(
+        resolver=get_connection_resolver(
+            "starship",
+            StarshipsConnection,
+            StarshipsEdge,
+            Starship,
+            attribute_name="starships",
+            get_additional_filters=lambda root: {
+                "pilots": {
                     "some": {"id": {"equals": Node.get_id(root)}},
                 },
             },

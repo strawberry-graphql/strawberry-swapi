@@ -27,6 +27,12 @@
           id
         }
       }
+      starshipConnection {
+        totalCount
+        starships {
+          id
+        }
+      }
     }
   }
 }

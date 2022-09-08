@@ -22,7 +22,7 @@ model Film {
 }
 
 model Person {
-  id           Int      @id
+  id           Int        @id
   name         String
   height       Int?
   mass         Float?
@@ -34,10 +34,11 @@ model Person {
   created      DateTime
   edited       DateTime
   homeworld_id Int
-  homeworld    Planet   @relation(fields: [homeworld_id], references: [id])
+  homeworld    Planet     @relation(fields: [homeworld_id], references: [id])
   species_id   Int?
-  species      Species? @relation(fields: [species_id], references: [id])
+  species      Species?   @relation(fields: [species_id], references: [id])
   films        Film[]
+  starships    Starship[]
 }
 
 model Planet {
@@ -106,4 +107,5 @@ model Starship {
   consumables            String
   created                DateTime
   edited                 DateTime
+  pilots                 Person[]
 }
