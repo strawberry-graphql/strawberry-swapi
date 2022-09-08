@@ -16,6 +16,9 @@
       homeworld {
         id
       }
+      species {
+        id
+      }
       created
       edited
     }

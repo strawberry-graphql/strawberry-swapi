@@ -8,12 +8,14 @@ from .context import Context
 from .node import Node
 from .page_info import PageInfo
 from .planets import Planet
+from .species import Species
 
 
 @strawberry.type
 class Person(Node):
     name: str | None
     homeworld_id: strawberry.Private[int]
+    species_id: strawberry.Private[int | None]
     created: str | None = None
     edited: str | None = None
     gender: str | None = None
@@ -40,12 +42,26 @@ class Person(Node):
 
         return Planet.from_row(planet) if planet is not None else None
 
+    @strawberry.field
+    async def species(self, info: Info[Context, None]) -> Species | None:
+        from .species import Species
+
+        db = info.context["db"]
+
+        if self.species_id is None:
+            return None
+
+        species = await db.species.find_first(where={"id": self.species_id})
+
+        return Species.from_row(species) if species is not None else None
+
     @staticmethod
     def from_row(row: prisma.models.Person):
         return Person(
             id=strawberry.ID(Node.get_global_id("people", row.id)),
             name=row.name,
             homeworld_id=row.homeworld_id,
+            species_id=row.species_id,
             gender=row.gender,
             skin_color=row.skin_color,
             hair_color=row.hair_color,

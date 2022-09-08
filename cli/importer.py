@@ -44,6 +44,11 @@ class Importer:
                     "skin_color": person["skinColor"],
                     "created": parser.isoparse(person["created"]),
                     "edited": parser.isoparse(person["edited"]),
+                    "species_id": (
+                        self._parse_id(person["species"]["id"])
+                        if person["species"]
+                        else None
+                    ),
                 }
             )
 
@@ -183,17 +188,17 @@ class Importer:
             )
 
     async def import_all(self) -> None:
-        await self.db.planet.delete_many()
-        await self.db.film.delete_many()
         await self.db.person.delete_many()
+        await self.db.planet.delete_many()
         await self.db.species.delete_many()
+        await self.db.film.delete_many()
         await self.db.vehicle.delete_many()
         await self.db.starship.delete_many()
 
         await self._load_planets()
+        await self._load_species()
         await self._load_films()
         await self._load_people()
-        await self._load_species()
         await self._load_vehicles()
         await self._load_starships()
 

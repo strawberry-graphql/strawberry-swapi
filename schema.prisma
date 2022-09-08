@@ -34,6 +34,8 @@ model Person {
   edited       DateTime
   homeworld_id Int
   homeworld    Planet   @relation(fields: [homeworld_id], references: [id])
+  species_id   Int?
+  species      Species? @relation(fields: [species_id], references: [id])
 }
 
 model Planet {
@@ -65,6 +67,7 @@ model Species {
   language         String
   created          DateTime
   edited           DateTime
+  people           Person[]
 }
 
 model Vehicle {
