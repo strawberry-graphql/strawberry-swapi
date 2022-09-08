@@ -92,6 +92,12 @@ class Importer:
                     "release_date": parser.isoparse(film["releaseDate"]),
                     "created": parser.isoparse(film["created"]),
                     "edited": parser.isoparse(film["edited"]),
+                    "species": {
+                        "connect": [
+                            {"id": self._parse_id(specie["id"])}
+                            for specie in film["speciesConnection"]["species"]
+                        ]
+                    },
                 }
             )
 

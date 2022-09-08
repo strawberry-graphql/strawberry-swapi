@@ -68,7 +68,7 @@ async def get_connection_object(
     additional_filters = additional_filters or {}
 
     if first is None and last is None:
-        first = 10
+        first = 30
 
     take = first
     cursor = after

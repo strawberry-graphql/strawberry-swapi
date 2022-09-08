@@ -2,15 +2,25 @@ import json
 
 import prisma
 import strawberry
-from strawberry.types.info import Info
 
-from swapi.utils.datetime import format_datetime
-
-from .context import Context
 from .node import Node
 from .page_info import PageInfo
+from .species import Species, SpeciesEdge
+from .utils.connections import get_connection_resolver
+from .utils.datetime import format_datetime
 
-# from .species import FilmSpeciesConnection, SpeciesEdge
+
+@strawberry.type
+class FilmSpeciesEdge(SpeciesEdge):
+    ...
+
+
+@strawberry.type
+class FilmSpeciesConnection:
+    page_info: PageInfo
+    edges: list[FilmSpeciesEdge | None]
+    total_count: int | None
+    species: list[Species]
 
 
 @strawberry.type(description="A single film.")
@@ -44,11 +54,22 @@ class Film(Node):
         )
     )
 
+    species_connection: FilmSpeciesConnection | None = strawberry.field(
+        resolver=get_connection_resolver(
+            "species",
+            FilmSpeciesConnection,
+            FilmSpeciesEdge,
+            Species,
+            attribute_name="species",
+            get_additional_filters=lambda root: {
+                "films": {"some": {"id": Node.get_id(root)}}
+            },
+        )
+    )
+
     @classmethod
     def from_row(cls, row: prisma.models.Film) -> "Film":
-
         return cls(
-            # TODO: not sure why the original swapi uses films and not the type name
             id=strawberry.ID(Node.get_global_id("films", row.id)),
             title=row.title,
             episode_id=row.episode_id,

@@ -13,6 +13,13 @@
       id
       created
       edited
+      speciesConnection {
+        totalCount
+        species {
+          id
+          name
+        }
+      }
     }
   }
 }

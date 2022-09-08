@@ -5,14 +5,53 @@ from strawberry.types.info import Info
 from swapi.utils.datetime import format_datetime
 
 from .context import Context
-from .film import Film, FilmsConnection, FilmsEdge
+from .film import Film, FilmsEdge
 from .node import Node
 from .page_info import PageInfo
 from .planets import Planet
 from .species import Species
-from .starships import Starship, StarshipsConnection, StarshipsEdge
+from .starships import Starship, StarshipsEdge
 from .utils.connections import get_connection_resolver
-from .vehicles import Vehicle, VehiclesConnection, VehiclesEdge
+from .vehicles import Vehicle, VehiclesEdge
+
+
+@strawberry.type
+class PersonFilmsEdge(FilmsEdge):
+    ...
+
+
+@strawberry.type
+class PersonFilmsConnection:
+    page_info: PageInfo
+    edges: list[PersonFilmsEdge | None]
+    total_count: int | None
+    films: list[Film]
+
+
+@strawberry.type
+class PersonStarshipsEdge(StarshipsEdge):
+    ...
+
+
+@strawberry.type
+class PersonStarshipsConnection:
+    page_info: PageInfo
+    edges: list[PersonStarshipsEdge | None]
+    total_count: int | None
+    starships: list[Starship]
+
+
+@strawberry.type
+class PersonVehiclesEdge(VehiclesEdge):
+    ...
+
+
+@strawberry.type
+class PersonVehiclesConnection:
+    page_info: PageInfo
+    edges: list[PersonVehiclesEdge | None]
+    total_count: int | None
+    vehicles: list[Vehicle]
 
 
 @strawberry.type
@@ -30,10 +69,10 @@ class Person(Node):
     eye_color: str | None = None
     birth_year: str | None = None
 
-    film_connection: FilmsConnection | None = strawberry.field(
+    film_connection: PersonFilmsConnection | None = strawberry.field(
         resolver=get_connection_resolver(
             "film",
-            FilmsConnection,
+            PersonFilmsConnection,
             FilmsEdge,
             Film,
             attribute_name="films",
@@ -45,10 +84,10 @@ class Person(Node):
         )
     )
 
-    starship_connection: StarshipsConnection | None = strawberry.field(
+    starship_connection: PersonStarshipsConnection | None = strawberry.field(
         resolver=get_connection_resolver(
             "starship",
-            StarshipsConnection,
+            PersonStarshipsConnection,
             StarshipsEdge,
             Starship,
             attribute_name="starships",
@@ -60,10 +99,10 @@ class Person(Node):
         )
     )
 
-    vehicle_connection: VehiclesConnection | None = strawberry.field(
+    vehicle_connection: PersonVehiclesConnection | None = strawberry.field(
         resolver=get_connection_resolver(
             "vehicle",
-            VehiclesConnection,
+            PersonVehiclesConnection,
             VehiclesEdge,
             Vehicle,
             attribute_name="vehicles",
