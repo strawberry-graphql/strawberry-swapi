@@ -1,71 +1,51 @@
+import json
 import typing
 
 import prisma
 import strawberry
-from utils import get_connection_object
 
 from .node import Node
 from .page_info import PageInfo
+from .utils.datetime import format_datetime
 
 
 @strawberry.type
 class Starship(Node):
-    name: typing.Optional[str]
-    created: typing.Optional[str] = None
-    edited: typing.Optional[str] = None
-    model: typing.Optional[str] = None
-    cost_in_credits: typing.Optional[str] = None
-    length: typing.Optional[float] = None
+    name: str | None
+    created: str | None = None
+    edited: str | None = None
+    model: str | None = None
+    cost_in_credits: float | None = None
+    length: float | None = None
     max_atmosphering_speed: typing.Optional[int] = None
-    hyperdrive_rating: typing.Optional[float] = None
-    crew: typing.Optional[str] = None
-    passengers: typing.Optional[str] = None
-    cargo_capacity: typing.Optional[float] = None
-    manufacturers: typing.Optional[typing.List[str]] = None
-    consumables: typing.Optional[str] = None
+    hyperdrive_rating: float | None = None
+    crew: str | None = None
+    passengers: str | None = None
+    cargo_capacity: float | None = None
+    manufacturers: list[str] | None = None
+    consumables: str | None = None
     MGLT: typing.Optional[int] = None
-    starship_class: typing.Optional[str] = None
-
-    @strawberry.field
-    async def pilot_connection(
-        self,
-        info,
-        after: typing.Optional[str] = None,
-        first: typing.Optional[int] = None,
-        before: typing.Optional[str] = None,
-        last: typing.Optional[int] = None,
-    ) -> typing.Optional[strawberry.LazyType["PeopleConnection", ".people"]]:
-        from .people import PeopleConnection, PeopleEdge
-
-        # TODO: filtering
-
-        return await get_connection_object(
-            people,
-            PeopleConnection,
-            PeopleEdge,
-            after=after,
-            first=first,
-            before=before,
-            last=last,
-        )
+    starship_class: str | None = None
 
     @staticmethod
-    def from_row(row):
+    def from_row(row: prisma.models.Starship) -> "Starship":
         return Starship(
-            id=row[starships.c.id],
-            name=row[starships.c.name],
-            created=row[starships.c.created],
-            edited=row[starships.c.edited],
-            model=row[starships.c.model],
-            cost_in_credits=row[starships.c.cost_in_credits],
-            length=row[starships.c.length],
-            max_atmosphering_speed=row[starships.c.max_atmosphering_speed],
-            crew=row[starships.c.crew],
-            passengers=row[starships.c.passengers],
-            cargo_capacity=row[starships.c.cargo_capacity],
-            hyperdrive_rating=row[starships.c.hyperdrive_rating],
-            MGLT=row[starships.c.MGLT],
-            starship_class=row[starships.c.starship_class],
+            id=strawberry.ID(Node.get_global_id("starships", row.id)),
+            name=row.name,
+            created=format_datetime(row.created),
+            edited=format_datetime(row.edited),
+            model=row.model,
+            cost_in_credits=row.cost_in_credits,
+            length=row.length,
+            max_atmosphering_speed=row.max_atmosphering_speed,
+            hyperdrive_rating=row.hyperdrive_rating,
+            crew=row.crew,
+            passengers=row.passengers,
+            cargo_capacity=row.cargo_capacity,
+            manufacturers=json.loads(row.manufacturers),
+            consumables=row.consumables,
+            MGLT=row.MGLT,
+            starship_class=row.starship_class,
         )
 
 
@@ -74,28 +54,10 @@ class StarshipsEdge:
     node: typing.Optional[Starship]
     cursor: str
 
-    @staticmethod
-    def from_row(row):
-        id_ = row[starships.c.id]
-
-        return StarshipsEdge(cursor=id_, node=Starship.from_row(row))
-
 
 @strawberry.type
 class StarshipsConnection:
     page_info: PageInfo
     edges: typing.List[StarshipsEdge]
     total_count: typing.Optional[int]
-    starships: typing.List[typing.Optional[Starship]] = None
-
-
-@strawberry.type
-class PersonStarshipsEdge(StarshipsEdge):
-    @staticmethod
-    def from_row(row: prisma.models.starship):
-        return PersonStarshipsEdge(cursor=row.id, node=Starship.from_row(row))
-
-
-@strawberry.type
-class PersonStarshipsConnection(StarshipsConnection):
-    edges: typing.List[typing.Optional[PersonStarshipsEdge]]
+    starships: list[Starship | None]

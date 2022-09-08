@@ -12,6 +12,7 @@ from .constants import (
     REFERENCE_API_URL,
     SPECIES_QUERY,
     VEHICLES_QUERY,
+    STARSHIP_QUERY,
 )
 from .utils.query import query
 
@@ -150,18 +151,50 @@ class Importer:
                 }
             )
 
+    async def _load_starships(self) -> None:
+        response = await query(
+            REFERENCE_API_URL,
+            STARSHIP_QUERY.read_text(),
+        )
+
+        starships = response["data"]["allStarships"]["starships"]
+
+        for starship in starships:
+            await self.db.starship.create(
+                data={
+                    "id": self._parse_id(starship["id"]),
+                    "name": starship["name"],
+                    "model": starship["model"],
+                    "starship_class": starship["starshipClass"],
+                    "manufacturers": json.dumps(starship["manufacturers"]),
+                    "length": starship["length"],
+                    "cost_in_credits": starship["costInCredits"],
+                    "crew": starship["crew"],
+                    "passengers": starship["passengers"],
+                    "max_atmosphering_speed": starship["maxAtmospheringSpeed"],
+                    "hyperdrive_rating": starship["hyperdriveRating"],
+                    "MGLT": starship["MGLT"],
+                    "cargo_capacity": starship["cargoCapacity"],
+                    "consumables": starship["consumables"],
+                    "created": parser.isoparse(starship["created"]),
+                    "edited": parser.isoparse(starship["edited"]),
+                }
+            )
+
     async def import_all(self) -> None:
         await self.db.film.delete_many()
         await self.db.person.delete_many()
         await self.db.planet.delete_many()
         await self.db.species.delete_many()
         await self.db.vehicle.delete_many()
+        await self.db.starship.delete_many()
 
         await self._load_films()
         await self._load_people()
         await self._load_planets()
         await self._load_species()
         await self._load_vehicles()
+        await self._load_starships()
 
     @staticmethod
     def _parse_id(global_id: str) -> int:

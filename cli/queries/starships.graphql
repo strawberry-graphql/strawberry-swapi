@@ -1,0 +1,25 @@
+{
+  allStarships(first: 100) {
+    pageInfo {
+      hasNextPage
+    }
+    starships {
+      id
+      name
+      model
+      starshipClass
+      hyperdriveRating
+      MGLT
+      manufacturers
+      costInCredits
+      length
+      crew
+      passengers
+      maxAtmospheringSpeed
+      cargoCapacity
+      consumables
+      created
+      edited
+    }
+  }
+}
