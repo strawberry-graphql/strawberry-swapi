@@ -20,6 +20,13 @@
           name
         }
       }
+      starshipConnection {
+        totalCount
+        starships {
+          id
+          name
+        }
+      }
     }
   }
 }

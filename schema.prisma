@@ -9,7 +9,7 @@ datasource db {
 }
 
 model Film {
-  id            Int       @id
+  id            Int        @id
   title         String
   episode_id    Int
   opening_crawl String
@@ -20,6 +20,7 @@ model Film {
   edited        DateTime
   characters    Person[]
   species       Species[]
+  starships     Starship[]
 }
 
 model Person {
@@ -112,4 +113,5 @@ model Starship {
   created                DateTime
   edited                 DateTime
   pilots                 Person[]
+  films                  Film[]
 }

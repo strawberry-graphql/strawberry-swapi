@@ -98,6 +98,30 @@ class Importer:
                             for specie in film["speciesConnection"]["species"]
                         ]
                     },
+                    "starships": {
+                        "connect": [
+                            {"id": self._parse_id(starship["id"])}
+                            for starship in film["starshipConnection"]["starships"]
+                        ]
+                    },
+                    # "vehicles": {
+                    #     "connect": [
+                    #         {"id": self._parse_id(vehicle["id"])}
+                    #         for vehicle in film["vehicleConnection"]["vehicles"]
+                    #     ]
+                    # },
+                    # "planets": {
+                    #     "connect": [
+                    #         {"id": self._parse_id(planet["id"])}
+                    #         for planet in film["planetConnection"]["planets"]
+                    #     ]
+                    # },
+                    # "characters": {
+                    #     "connect": [
+                    #         {"id": self._parse_id(character["id"])}
+                    #         for character in film["characterConnection"]["characters"]
+                    #     ]
+                    # },
                 }
             )
 
@@ -220,9 +244,9 @@ class Importer:
         await self.db.starship.delete_many()
 
         await self._load_planets()
+        await self._load_starships()
         await self._load_species()
         await self._load_films()
-        await self._load_starships()
         await self._load_vehicles()
         await self._load_people()
 
