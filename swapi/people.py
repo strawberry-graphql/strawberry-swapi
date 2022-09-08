@@ -1,18 +1,13 @@
-import typing
-
 import prisma
 import strawberry
 from strawberry.types.info import Info
 
 from swapi.utils.datetime import format_datetime
-from utils import get_generic_connection
 
 from .context import Context
 from .node import Node
 from .page_info import PageInfo
-
-# from .planets import Planet
-# from .starships import PersonStarshipsConnection, PersonStarshipsEdge
+from .planets import Planet
 
 
 @strawberry.type
@@ -35,20 +30,22 @@ class Person(Node):
     #     )
     # )
 
-    # @strawberry.field
-    # async def homeworld(self, info: Info[Context, None]) -> Planet | None:
-    #     db = info.context["db"]
+    @strawberry.field
+    async def homeworld(self, info: Info[Context, None]) -> Planet | None:
+        from .planets import Planet
 
-    #     planet = await db.planet.find_first(where={"id": self.homeworld_id})
+        db = info.context["db"]
 
-    #     return Planet.from_row(planet) if planet is not None else None
+        planet = await db.planet.find_first(where={"id": self.homeworld_id})
+
+        return Planet.from_row(planet) if planet is not None else None
 
     @staticmethod
     def from_row(row: prisma.models.Person):
         return Person(
             id=strawberry.ID(Node.get_global_id("people", row.id)),
             name=row.name,
-            homeworld_id=None,  # row.homeworld_id,
+            homeworld_id=row.homeworld_id,
             gender=row.gender,
             skin_color=row.skin_color,
             hair_color=row.hair_color,
@@ -63,13 +60,13 @@ class Person(Node):
 
 @strawberry.type
 class PeopleEdge:
-    node: typing.Optional[Person]
+    node: Person | None
     cursor: str
 
 
 @strawberry.type
 class PeopleConnection:
     page_info: PageInfo
-    edges: typing.List[PeopleEdge]
+    edges: list[PeopleEdge]
     total_count: int
-    people: typing.List[Person]
+    people: list[Person]

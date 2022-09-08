@@ -21,17 +21,19 @@ model Film {
 }
 
 model Person {
-  id         Int      @id
-  name       String
-  height     Int?
-  mass       Float?
-  eye_color  String
-  birth_year String
-  gender     String
-  hair_color String
-  skin_color String
-  created    DateTime
-  edited     DateTime
+  id           Int      @id
+  name         String
+  height       Int?
+  mass         Float?
+  eye_color    String
+  birth_year   String
+  gender       String
+  hair_color   String
+  skin_color   String
+  created      DateTime
+  edited       DateTime
+  homeworld_id Int
+  homeworld    Planet   @relation(fields: [homeworld_id], references: [id])
 }
 
 model Planet {
@@ -47,6 +49,7 @@ model Planet {
   surface_water   Float?
   created         DateTime
   edited          DateTime
+  Person          Person[]
 }
 
 model Species {

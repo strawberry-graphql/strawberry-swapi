@@ -13,9 +13,9 @@
       height
       mass
       skinColor
-      # homeworld {
-      #   id
-      # }
+      homeworld {
+        id
+      }
       created
       edited
     }
