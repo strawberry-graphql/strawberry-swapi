@@ -1,6 +1,7 @@
 # from typing import Annotated, Optional
 
-# import strawberry
+from typing import Any, Callable
+
 import strawberry
 from strawberry.types.info import Info
 
@@ -13,211 +14,100 @@ from swapi.starships import Starship, StarshipsConnection, StarshipsEdge
 from swapi.vehicles import Vehicle, VehiclesConnection, VehiclesEdge
 from utils import get_connection_object
 
-#     @strawberry.field
-#     async def person(
-#         self,
-#         info: Info[Context, None],
-#         id: strawberry.ID | None = None,
-#         person_id: Annotated[
-#             strawberry.ID | None, strawberry.argument(name="personID")
-#         ] = None,
-#     ) -> Person | None:
-#         if id is None and person_id is None:
-#             raise ValueError("musclrovide id or personID")
 
-#         # TODO: relay ids
-#         id = id or person_id
+def _get_connection_resolver(
+    table_name: str,
+    ConnectionType: type,
+    EdgeType: type,
+    NodeType: type,
+    attribute_name: str,
+) -> Callable:
+    async def _resolve(
+        self,
+        info: Info[Context, None],
+        after: str | None = None,
+        first: int | None = None,
+        before: str | None = None,
+        last: int | None = None,
+    ) -> ConnectionType | None:
+        db = info.context["db"]
 
-#         db = info.context["db"]
+        return await get_connection_object(
+            getattr(db, table_name),
+            ConnectionType,
+            EdgeType,
+            NodeType,
+            after=after,
+            first=first,
+            before=before,
+            last=last,
+            attribute_name=attribute_name,
+        )
 
-#         person = await db.people.find_first(
-#             where={"id": int(id or person_id)}  # type: ignore - we know it's not None
-#         )
-
-#         return Person.from_row(person) if person is not None else None
-
-#     @strawberry.field
-#     async def all_planets(
-#         self,
-#         info: Info[Context, None],
-#         after: str | None = None,
-#         first: int | None = None,
-#         before: str | None = None,
-#         last: int | None = None,
-#     ) -> PlanetsConnection | None:
-#         db = info.context["db"]
-
-#         return await get_connection_object(
-#             db.planet,
-#             PlanetsConnection,
-#             PlanetsEdge,
-#             after=after,
-#             first=first,
-#             before=before,
-#             last=last,
-#         )
-
-#     @strawberry.field
-#     async def all_starships(
-#         self,
-#         info: Info[Context, None],
-#         after: str | None = None,
-#         first: int | None = None,
-#         before: str | None = None,
-#         last: int | None = None,
-#     ) -> StarshipsConnection | None:
-#         db = info.context["db"]
-
-#         return await get_connection_object(
-#             db.starship,
-#             StarshipsConnection,
-#             StarshipsEdge,
-#             after=after,
-#             first=first,
-#             before=before,
-#             last=last,
-#         )
+    return _resolve
 
 
 @strawberry.type
 class Root:
-    @strawberry.field
-    async def all_films(
-        self,
-        info: Info[Context, None],
-        after: str | None = None,
-        first: int | None = None,
-        before: str | None = None,
-        last: int | None = None,
-    ) -> FilmsConnection | None:
-        db = info.context["db"]
-
-        return await get_connection_object(
-            db.film,
+    all_films: FilmsConnection | None = strawberry.field(
+        resolver=_get_connection_resolver(
+            "film",
             FilmsConnection,
             FilmsEdge,
             Film,
-            after=after,
-            first=first,
-            before=before,
-            last=last,
             attribute_name="films",
         )
+    )
 
-    @strawberry.field
-    async def all_people(
-        self,
-        info: Info[Context, None],
-        after: str | None = None,
-        first: int | None = None,
-        before: str | None = None,
-        last: int | None = None,
-    ) -> PeopleConnection | None:
-        db = info.context["db"]
-
-        return await get_connection_object(
-            db.person,
+    all_people: PeopleConnection | None = strawberry.field(
+        resolver=_get_connection_resolver(
+            "person",
             PeopleConnection,
             PeopleEdge,
             Person,
-            after=after,
-            first=first,
-            before=before,
-            last=last,
             attribute_name="people",
         )
+    )
 
-    @strawberry.field
-    async def all_planets(
-        self,
-        info: Info[Context, None],
-        after: str | None = None,
-        first: int | None = None,
-        before: str | None = None,
-        last: int | None = None,
-    ) -> PlanetsConnection | None:
-        db = info.context["db"]
-
-        return await get_connection_object(
-            db.planet,
+    all_planets: PlanetsConnection | None = strawberry.field(
+        resolver=_get_connection_resolver(
+            "planet",
             PlanetsConnection,
             PlanetsEdge,
             Planet,
-            after=after,
-            first=first,
-            before=before,
-            last=last,
             attribute_name="planets",
         )
+    )
 
-    @strawberry.field
-    async def all_species(
-        self,
-        info: Info[Context, None],
-        after: str | None = None,
-        first: int | None = None,
-        before: str | None = None,
-        last: int | None = None,
-    ) -> SpeciesConnection | None:
-        db = info.context["db"]
-
-        return await get_connection_object(
-            db.species,
+    all_species: SpeciesConnection | None = strawberry.field(
+        resolver=_get_connection_resolver(
+            "species",
             SpeciesConnection,
             SpeciesEdge,
             Specie,
-            after=after,
-            first=first,
-            before=before,
-            last=last,
             attribute_name="species",
         )
+    )
 
-    @strawberry.field
-    async def all_vehicles(
-        self,
-        info: Info[Context, None],
-        after: str | None = None,
-        first: int | None = None,
-        before: str | None = None,
-        last: int | None = None,
-    ) -> VehiclesConnection | None:
-        db = info.context["db"]
-
-        return await get_connection_object(
-            db.vehicle,
+    all_vehicles: VehiclesConnection | None = strawberry.field(
+        resolver=_get_connection_resolver(
+            "vehicle",
             VehiclesConnection,
             VehiclesEdge,
             Vehicle,
-            after=after,
-            first=first,
-            before=before,
-            last=last,
             attribute_name="vehicles",
         )
+    )
 
-    @strawberry.field
-    async def all_starships(
-        self,
-        info: Info[Context, None],
-        after: str | None = None,
-        first: int | None = None,
-        before: str | None = None,
-        last: int | None = None,
-    ) -> StarshipsConnection | None:
-        db = info.context["db"]
-
-        return await get_connection_object(
-            db.starship,
+    all_starships: StarshipsConnection | None = strawberry.field(
+        resolver=_get_connection_resolver(
+            "starship",
             StarshipsConnection,
             StarshipsEdge,
             Starship,
-            after=after,
-            first=first,
-            before=before,
-            last=last,
             attribute_name="starships",
         )
+    )
 
 
 schema = strawberry.Schema(query=Root)
