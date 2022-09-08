@@ -1,13 +1,14 @@
-from typing import Callable
+from typing import Annotated, Callable
 
 import strawberry
 from strawberry.types.info import Info
 
 from swapi.context import Context
 from swapi.film import Film, FilmsConnection, FilmsEdge
+from swapi.node import Node
 from swapi.people import PeopleConnection, PeopleEdge, Person
 from swapi.planets import Planet, PlanetsConnection, PlanetsEdge
-from swapi.species import Specie, SpeciesConnection, SpeciesEdge
+from swapi.species import Species, SpeciesConnection, SpeciesEdge
 from swapi.starships import Starship, StarshipsConnection, StarshipsEdge
 from swapi.vehicles import Vehicle, VehiclesConnection, VehiclesEdge
 from utils import get_connection_object
@@ -23,10 +24,10 @@ def _get_connection_resolver(
     async def _resolve(
         self,
         info: Info[Context, None],
-        after: str | None = None,
-        first: int | None = None,
-        before: str | None = None,
-        last: int | None = None,
+        after: str | None = strawberry.UNSET,
+        first: int | None = strawberry.UNSET,
+        before: str | None = strawberry.UNSET,
+        last: int | None = strawberry.UNSET,
     ) -> ConnectionType | None:  # type: ignore
         db = info.context["db"]
 
@@ -82,7 +83,7 @@ class Root:
             "species",
             SpeciesConnection,
             SpeciesEdge,
-            Specie,
+            Species,
             attribute_name="species",
         )
     )
@@ -106,6 +107,78 @@ class Root:
             attribute_name="starships",
         )
     )
+
+    @strawberry.field
+    def film(
+        self,
+        info: Info[Context, None],
+        id: strawberry.ID | None,
+        film_id: Annotated[strawberry.ID | None, strawberry.argument(name="filmID")],
+    ) -> Film | None:
+        return None
+
+    @strawberry.field
+    def person(
+        self,
+        info: Info[Context, None],
+        id: strawberry.ID | None,
+        person_id: Annotated[
+            strawberry.ID | None, strawberry.argument(name="personID")
+        ],
+    ) -> Person | None:
+        return None
+
+    @strawberry.field
+    def planet(
+        self,
+        info: Info[Context, None],
+        id: strawberry.ID | None,
+        planet_id: Annotated[
+            strawberry.ID | None, strawberry.argument(name="planetID")
+        ],
+    ) -> Planet | None:
+        return None
+
+    @strawberry.field
+    def species(
+        self,
+        info: Info[Context, None],
+        id: strawberry.ID | None,
+        species_id: Annotated[
+            strawberry.ID | None, strawberry.argument(name="speciesID")
+        ],
+    ) -> Species | None:
+        return None
+
+    @strawberry.field
+    def vehicle(
+        self,
+        info: Info[Context, None],
+        id: strawberry.ID | None,
+        vehicle_id: Annotated[
+            strawberry.ID | None, strawberry.argument(name="vehicleID")
+        ],
+    ) -> Vehicle | None:
+        return None
+
+    @strawberry.field
+    def starship(
+        self,
+        info: Info[Context, None],
+        id: strawberry.ID | None,
+        starship_id: Annotated[
+            strawberry.ID | None, strawberry.argument(name="starshipID")
+        ],
+    ) -> Starship | None:
+        return None
+
+    @strawberry.field
+    def node(
+        self,
+        info: Info[Context, None],
+        id: strawberry.ID | None,
+    ) -> Node | None:
+        return None
 
 
 schema = strawberry.Schema(query=Root)

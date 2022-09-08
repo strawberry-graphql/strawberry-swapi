@@ -1,10 +1,11 @@
 import asyncio
 
 import prisma
+import rich
 import typer
 from jsondiff import diff
 
-from .constants import ALL_QUERIES, REFERENCE_API_URL
+from .constants import ALL_QUERIES, INTROSPECTION_QUERY, REFERENCE_API_URL
 from .importer import Importer
 from .utils.query import query
 from .utils.wait_for_port import wait_for_port
@@ -26,18 +27,16 @@ def import_data():
         finally:
             await db.disconnect()
 
-    print("importing data...")
+    rich.print("importing data...")
     asyncio.run(_import())
-    print("loaded data")
+    rich.print("loaded data")
 
 
 @app.command()
 def test_queries():
-    print("Ideally this command would run some queries against the the GraphQL API")
-
     async def _test():
         if not await wait_for_port("localhost", 8000):
-            print("The server is not running")
+            rich.print("The server is not running")
             return
 
         for query_path in ALL_QUERIES:
@@ -52,8 +51,22 @@ def test_queries():
 
             if difference:
                 print(f"Query {query_path} is different")
-                print(difference)
+                rich.print(difference)
 
-    print("running queries...")
+    rich.print("running queries...")
     asyncio.run(_test())
-    print("ran queries")
+    rich.print("ran queries")
+
+
+@app.command()
+def diff_introspection():
+    import subprocess
+
+    command = [
+        "npx",
+        "graphql-schema-diff",
+        REFERENCE_API_URL,
+        "http://localhost:8000/graphql",
+    ]
+
+    subprocess.check_output(command)

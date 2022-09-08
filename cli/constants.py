@@ -9,6 +9,7 @@ PLANETS_QUERY = HERE / "queries/planets.graphql"
 SPECIES_QUERY = HERE / "queries/species.graphql"
 VEHICLES_QUERY = HERE / "queries/vehicles.graphql"
 STARSHIP_QUERY = HERE / "queries/starships.graphql"
+INTROSPECTION_QUERY = HERE / "queries/introspection.graphql"
 
 ALL_QUERIES = [
     FILMS_QUERY,

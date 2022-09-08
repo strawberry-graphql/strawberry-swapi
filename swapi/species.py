@@ -9,7 +9,7 @@ from .utils.datetime import format_datetime
 
 
 @strawberry.type
-class Specie(Node):
+class Species(Node):
     id: strawberry.ID
     name: str
     created: str | None = None
@@ -24,7 +24,7 @@ class Specie(Node):
     average_height: int | None = None
 
     @classmethod
-    def from_row(cls, row: prisma.models.Species) -> "Specie":
+    def from_row(cls, row: prisma.models.Species) -> "Species":
         return cls(
             id=strawberry.ID(Node.get_global_id("species", row.id)),
             name=row.name,
@@ -43,7 +43,7 @@ class Specie(Node):
 
 @strawberry.type
 class SpeciesEdge:
-    node: Specie | None
+    node: Species | None
     cursor: str
 
 
@@ -52,4 +52,4 @@ class SpeciesConnection:
     page_info: PageInfo
     edges: list[SpeciesEdge]
     total_count: int
-    species: list[Specie]
+    species: list[Species]
