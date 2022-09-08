@@ -1,6 +1,4 @@
-# from typing import Annotated, Optional
-
-from typing import Any, Callable
+from typing import Callable
 
 import strawberry
 from strawberry.types.info import Info
@@ -29,7 +27,7 @@ def _get_connection_resolver(
         first: int | None = None,
         before: str | None = None,
         last: int | None = None,
-    ) -> ConnectionType | None:
+    ) -> ConnectionType | None:  # type: ignore
         db = info.context["db"]
 
         return await get_connection_object(
