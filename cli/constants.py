@@ -7,10 +7,12 @@ FILMS_QUERY = HERE / "queries/films.graphql"
 PEOPLE_QUERY = HERE / "queries/people.graphql"
 PLANETS_QUERY = HERE / "queries/planets.graphql"
 SPECIES_QUERY = HERE / "queries/species.graphql"
+VEHICLES_QUERY = HERE / "queries/vehicles.graphql"
 
 ALL_QUERIES = [
     FILMS_QUERY,
     PEOPLE_QUERY,
     PLANETS_QUERY,
     SPECIES_QUERY,
+    VEHICLES_QUERY,
 ]

@@ -1,0 +1,23 @@
+{
+  allVehicles(first: 100) {
+    pageInfo {
+      hasNextPage
+    }
+    vehicles {
+      id
+      name
+      model
+      vehicleClass
+      manufacturers
+      costInCredits
+      length
+      crew
+      passengers
+      maxAtmospheringSpeed
+      cargoCapacity
+      consumables
+      created
+      edited
+    }
+  }
+}

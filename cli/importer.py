@@ -5,8 +5,14 @@ from dataclasses import dataclass
 import prisma
 from dateutil import parser
 
-from .constants import (FILMS_QUERY, PEOPLE_QUERY, PLANETS_QUERY,
-                        REFERENCE_API_URL, SPECIES_QUERY)
+from .constants import (
+    FILMS_QUERY,
+    PEOPLE_QUERY,
+    PLANETS_QUERY,
+    REFERENCE_API_URL,
+    SPECIES_QUERY,
+    VEHICLES_QUERY,
+)
 from .utils.query import query
 
 
@@ -116,16 +122,46 @@ class Importer:
                 }
             )
 
+    async def _load_vehicles(self) -> None:
+        response = await query(
+            REFERENCE_API_URL,
+            VEHICLES_QUERY.read_text(),
+        )
+
+        vehicles = response["data"]["allVehicles"]["vehicles"]
+
+        for vehicle in vehicles:
+            await self.db.vehicle.create(
+                data={
+                    "id": self._parse_id(vehicle["id"]),
+                    "name": vehicle["name"],
+                    "model": vehicle["model"],
+                    "vehicle_class": vehicle["vehicleClass"],
+                    "manufacturers": json.dumps(vehicle["manufacturers"]),
+                    "length": vehicle["length"],
+                    "cost_in_credits": vehicle["costInCredits"],
+                    "crew": vehicle["crew"],
+                    "passengers": vehicle["passengers"],
+                    "max_atmosphering_speed": vehicle["maxAtmospheringSpeed"],
+                    "cargo_capacity": vehicle["cargoCapacity"],
+                    "consumables": vehicle["consumables"],
+                    "created": parser.isoparse(vehicle["created"]),
+                    "edited": parser.isoparse(vehicle["edited"]),
+                }
+            )
+
     async def import_all(self) -> None:
         await self.db.film.delete_many()
         await self.db.person.delete_many()
         await self.db.planet.delete_many()
         await self.db.species.delete_many()
+        await self.db.vehicle.delete_many()
 
         await self._load_films()
         await self._load_people()
         await self._load_planets()
         await self._load_species()
+        await self._load_vehicles()
 
     @staticmethod
     def _parse_id(global_id: str) -> int:

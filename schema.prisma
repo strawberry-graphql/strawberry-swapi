@@ -50,7 +50,7 @@ model Planet {
 }
 
 model Species {
-  id               Int    @id
+  id               Int      @id
   name             String
   classification   String
   designation      String
@@ -60,6 +60,23 @@ model Species {
   hair_colors      String
   skin_colors      String
   language         String
-  created DateTime
-  edited  DateTime
+  created          DateTime
+  edited           DateTime
+}
+
+model Vehicle {
+  id                     Int      @id
+  name                   String
+  model                  String
+  vehicle_class          String
+  manufacturers          String
+  cost_in_credits        Float?
+  length                 Float?
+  crew                   String
+  passengers             String
+  max_atmosphering_speed Int?
+  cargo_capacity         Float?
+  consumables            String
+  created                DateTime
+  edited                 DateTime
 }

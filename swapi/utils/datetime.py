@@ -2,4 +2,4 @@ import datetime
 
 
 def format_datetime(dt: datetime.datetime) -> str:
-    return dt.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+    return dt.strftime("%Y-%m-%dT%H:%M:%S.%fZ").replace(".000000Z", "Z")
