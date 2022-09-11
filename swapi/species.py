@@ -2,6 +2,7 @@ import json
 
 import prisma
 import strawberry
+from typing import TYPE_CHECKING, Annotated
 
 from strawberry.types.info import Info
 from .context import Context
@@ -10,6 +11,24 @@ from .node import Node
 from .planets import Planet
 from .page_info import PageInfo
 from .utils.datetime import format_datetime
+from .utils.connections import get_connection_resolver
+
+if TYPE_CHECKING:
+    from .people import Person
+
+
+@strawberry.type
+class SpeciesPeopleEdge:
+    cursor: str
+    node: Annotated["Person", strawberry.lazy(".people")]
+
+
+@strawberry.type
+class SpeciesPeopleConnection:
+    page_info: PageInfo
+    edges: list[SpeciesPeopleEdge | None]
+    total_count: int | None
+    people: list[Annotated["Person", strawberry.lazy(".people")]]
 
 
 @strawberry.type
@@ -40,6 +59,17 @@ class Species(Node):
         planet = await db.planet.find_first(where={"id": self.homeworld_id})
 
         return Planet.from_row(planet) if planet is not None else None
+
+    person_connection: SpeciesPeopleConnection | None = strawberry.field(
+        resolver=get_connection_resolver(
+            "person",
+            SpeciesPeopleConnection,
+            SpeciesPeopleEdge,
+            "swapi.people.Person",
+            attribute_name="people",
+            get_additional_filters=lambda root: {"species": {"id": Node.get_id(root)}},
+        )
+    )
 
     @classmethod
     def from_row(cls, row: prisma.models.Species) -> "Species":

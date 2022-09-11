@@ -19,6 +19,12 @@
       }
       created
       edited
+      personConnection(first: 100) {
+        totalCount
+        people {
+          id
+        }
+      }
     }
   }
 }
