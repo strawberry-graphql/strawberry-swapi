@@ -1,11 +1,30 @@
 import json
+from typing import TYPE_CHECKING, Annotated
 
 import prisma
 import strawberry
 
 from .node import Node
 from .page_info import PageInfo
+from .utils.connections import get_connection_resolver
 from .utils.datetime import format_datetime
+
+if TYPE_CHECKING:
+    from .people import Person
+
+
+@strawberry.type
+class PlanetResidentsEdge:
+    cursor: str
+    node: Annotated["Person", strawberry.lazy(".people")]
+
+
+@strawberry.type
+class PlanetResidentsConnection:
+    page_info: PageInfo
+    edges: list[PlanetResidentsEdge | None]
+    total_count: int | None
+    residents: list[Annotated["Person", strawberry.lazy(".people")]]
 
 
 @strawberry.type
@@ -21,6 +40,19 @@ class Planet(Node):
     population: float | None = None
     climates: list[str | None] | None = None
     terrains: list[str | None] | None = None
+
+    resident_connection: PlanetResidentsConnection | None = strawberry.field(
+        resolver=get_connection_resolver(
+            "person",
+            PlanetResidentsConnection,
+            PlanetResidentsEdge,
+            "swapi.people.Person",
+            attribute_name="residents",
+            get_additional_filters=lambda root: {
+                "homeworld": {"id": Node.get_id(root)}
+            },
+        )
+    )
 
     @staticmethod
     def from_row(row: prisma.models.Planet) -> "Planet":

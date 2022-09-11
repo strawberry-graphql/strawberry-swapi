@@ -16,6 +16,12 @@
       surfaceWater
       created
       edited
+      residentConnection(first:100) {
+        totalCount
+        residents {
+          id
+        }
+      }
     }
   }
 }
