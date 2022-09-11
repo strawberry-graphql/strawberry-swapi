@@ -1,4 +1,5 @@
 import json
+from typing import TYPE_CHECKING, Annotated
 
 import prisma
 import strawberry
@@ -11,6 +12,9 @@ from .vehicles import Vehicle, VehiclesEdge
 from .planets import Planet, PlanetsEdge
 from .utils.connections import get_connection_resolver
 from .utils.datetime import format_datetime
+
+if TYPE_CHECKING:
+    from .people import Person
 
 
 @strawberry.type
@@ -63,6 +67,20 @@ class FilmPlanetsConnection:
     edges: list[FilmPlanetsEdge | None]
     total_count: int | None
     planets: list[Planet]
+
+
+@strawberry.type
+class FilmCharactersEdge:
+    cursor: str
+    node: Annotated["Person", strawberry.lazy(".people")]
+
+
+@strawberry.type
+class FilmCharactersConnection:
+    page_info: PageInfo
+    edges: list[FilmCharactersEdge | None]
+    total_count: int | None
+    characters: list[Annotated["Person", strawberry.lazy(".people")]]
 
 
 @strawberry.type(description="A single film.")
@@ -142,6 +160,19 @@ class Film(Node):
             FilmPlanetsEdge,
             Planet,
             attribute_name="planets",
+            get_additional_filters=lambda root: {
+                "films": {"some": {"id": Node.get_id(root)}}
+            },
+        )
+    )
+
+    character_connection: FilmCharactersConnection | None = strawberry.field(
+        resolver=get_connection_resolver(
+            "person",
+            FilmCharactersConnection,
+            FilmCharactersEdge,
+            "swapi.people.Person",
+            attribute_name="characters",
             get_additional_filters=lambda root: {
                 "films": {"some": {"id": Node.get_id(root)}}
             },

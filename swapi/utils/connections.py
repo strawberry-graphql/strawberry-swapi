@@ -1,4 +1,5 @@
-from typing import Any, Callable
+import importlib
+from typing import Any, Callable, cast
 
 import strawberry
 from strawberry.types.info import Info
@@ -10,7 +11,7 @@ def get_connection_resolver(
     table_name: str,
     ConnectionType: type,
     EdgeType: type,
-    NodeType: type,
+    NodeType: type | str,
     attribute_name: str,
     get_additional_filters: Callable[[object], dict[str, Any]] = lambda root: {},
 ) -> Callable:
@@ -22,6 +23,14 @@ def get_connection_resolver(
         before: str | None = strawberry.UNSET,
         last: int | None = strawberry.UNSET,
     ) -> ConnectionType | None:  # type: ignore
+        nonlocal NodeType
+
+        if isinstance(NodeType, str):
+            module, name = NodeType.rsplit(".", 1)
+
+            NodeType = getattr(importlib.import_module(module), name)
+            NodeType = cast(type, NodeType)
+
         db = info.context["db"]
 
         additional_filters = get_additional_filters(root)
