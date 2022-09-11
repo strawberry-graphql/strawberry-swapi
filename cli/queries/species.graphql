@@ -14,9 +14,9 @@
       hairColors
       skinColors
       language
-      # homeworld {
-      #   id
-      # }
+      homeworld {
+        id
+      }
       created
       edited
     }

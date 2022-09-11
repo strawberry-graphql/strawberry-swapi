@@ -47,7 +47,7 @@ model Person {
 }
 
 model Planet {
-  id              Int      @id
+  id              Int       @id
   name            String
   diameter        Int?
   rotation_period Int?
@@ -61,6 +61,7 @@ model Planet {
   edited          DateTime
   people          Person[]
   films           Film[]
+  Species         Species[]
 }
 
 model Species {
@@ -78,6 +79,8 @@ model Species {
   edited           DateTime
   people           Person[]
   films            Film[]
+  homeworld_id     Int?
+  homeworld        Planet?  @relation(fields: [homeworld_id], references: [id])
 }
 
 model Vehicle {

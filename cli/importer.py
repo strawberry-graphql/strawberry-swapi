@@ -174,6 +174,11 @@ class Importer:
                     "language": specie["language"],
                     "created": parser.isoparse(specie["created"]),
                     "edited": parser.isoparse(specie["edited"]),
+                    "homeworld_id": (
+                        self._parse_id(specie["homeworld"]["id"])
+                        if specie["homeworld"] is not None
+                        else None
+                    ),
                 }
             )
 
