@@ -70,3 +70,12 @@ def diff_introspection():
     ]
 
     subprocess.check_output(command)
+
+    command = [
+        "npx",
+        "graphql-schema-diff",
+        REFERENCE_API_URL,
+        "http://localhost:8000/graphql",
+    ]
+
+    subprocess.check_output(command)
