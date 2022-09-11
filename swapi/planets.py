@@ -11,6 +11,7 @@ from .utils.datetime import format_datetime
 
 if TYPE_CHECKING:
     from .people import Person
+    from .film import Film
 
 
 @strawberry.type
@@ -25,6 +26,20 @@ class PlanetResidentsConnection:
     edges: list[PlanetResidentsEdge | None]
     total_count: int | None
     residents: list[Annotated["Person", strawberry.lazy(".people")]]
+
+
+@strawberry.type
+class PlanetFilmsEdge:
+    cursor: str
+    node: Annotated["Film", strawberry.lazy(".film")]
+
+
+@strawberry.type
+class PlanetFilmsConnection:
+    page_info: PageInfo
+    edges: list[PlanetFilmsEdge | None]
+    total_count: int | None
+    films: list[Annotated["Film", strawberry.lazy(".film")]]
 
 
 @strawberry.type
@@ -50,6 +65,19 @@ class Planet(Node):
             attribute_name="residents",
             get_additional_filters=lambda root: {
                 "homeworld": {"id": Node.get_id(root)}
+            },
+        )
+    )
+
+    film_connection: PlanetFilmsConnection | None = strawberry.field(
+        resolver=get_connection_resolver(
+            "film",
+            PlanetFilmsConnection,
+            PlanetFilmsEdge,
+            "swapi.film.Film",
+            attribute_name="films",
+            get_additional_filters=lambda root: {
+                "planets": {"some": {"id": Node.get_id(root)}}
             },
         )
     )

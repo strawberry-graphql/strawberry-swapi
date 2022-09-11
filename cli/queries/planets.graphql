@@ -16,9 +16,15 @@
       surfaceWater
       created
       edited
-      residentConnection(first:100) {
+      residentConnection(first: 100) {
         totalCount
         residents {
+          id
+        }
+      }
+      filmConnection(first: 100) {
+        totalCount
+        films {
           id
         }
       }
