@@ -15,6 +15,7 @@ from .utils.connections import get_connection_resolver
 
 if TYPE_CHECKING:
     from .people import Person
+    from .film import Film
 
 
 @strawberry.type
@@ -29,6 +30,20 @@ class SpeciesPeopleConnection:
     edges: list[SpeciesPeopleEdge | None]
     total_count: int | None
     people: list[Annotated["Person", strawberry.lazy(".people")]]
+
+
+@strawberry.type
+class SpeciesFilmsEdge:
+    cursor: str
+    node: Annotated["Film", strawberry.lazy(".film")]
+
+
+@strawberry.type
+class SpeciesFilmsConnection:
+    page_info: PageInfo
+    edges: list[SpeciesFilmsEdge | None]
+    total_count: int | None
+    films: list[Annotated["Film", strawberry.lazy(".film")]]
 
 
 @strawberry.type
@@ -68,6 +83,19 @@ class Species(Node):
             "swapi.people.Person",
             attribute_name="people",
             get_additional_filters=lambda root: {"species": {"id": Node.get_id(root)}},
+        )
+    )
+
+    film_connection: SpeciesFilmsConnection | None = strawberry.field(
+        resolver=get_connection_resolver(
+            "film",
+            SpeciesFilmsConnection,
+            SpeciesFilmsEdge,
+            "swapi.film.Film",
+            attribute_name="films",
+            get_additional_filters=lambda root: {
+                "species": {"some": {"id": Node.get_id(root)}}
+            },
         )
     )
 

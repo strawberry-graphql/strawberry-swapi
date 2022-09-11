@@ -3,9 +3,29 @@ import json
 import prisma
 import strawberry
 
+from typing import TYPE_CHECKING, Annotated
+
 from .node import Node
 from .page_info import PageInfo
 from .utils.datetime import format_datetime
+from .utils.connections import get_connection_resolver
+
+if TYPE_CHECKING:
+    from .people import Person
+
+
+@strawberry.type
+class StarshipPilotsEdge:
+    cursor: str
+    node: Annotated["Person", strawberry.lazy(".people")]
+
+
+@strawberry.type
+class StarshipPilotsConnection:
+    page_info: PageInfo
+    edges: list[StarshipPilotsEdge | None]
+    total_count: int | None
+    pilots: list[Annotated["Person", strawberry.lazy(".people")]]
 
 
 @strawberry.type
@@ -25,6 +45,19 @@ class Starship(Node):
     consumables: str | None = None
     MGLT: int | None = None
     starship_class: str | None = None
+
+    pilot_connection: StarshipPilotsConnection | None = strawberry.field(
+        resolver=get_connection_resolver(
+            "person",
+            StarshipPilotsConnection,
+            StarshipPilotsEdge,
+            "swapi.people.Person",
+            attribute_name="pilots",
+            get_additional_filters=lambda root: {
+                "starships": {"some": {"id": Node.get_id(root)}}
+            },
+        )
+    )
 
     @staticmethod
     def from_row(row: prisma.models.Starship) -> "Starship":
