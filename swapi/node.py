@@ -15,4 +15,8 @@ class Node:
     def get_id(obj: object) -> int:
         id_: str = obj.id  # type: ignore
 
+        return Node.get_id_from_string(id_)
+
+    @staticmethod
+    def get_id_from_string(id_: str) -> int:
         return int(b64decode(id_.encode()).decode().split(":")[1])

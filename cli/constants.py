@@ -10,6 +10,7 @@ SPECIES_QUERY = HERE / "queries/species.graphql"
 VEHICLES_QUERY = HERE / "queries/vehicles.graphql"
 STARSHIP_QUERY = HERE / "queries/starships.graphql"
 INTROSPECTION_QUERY = HERE / "queries/introspection.graphql"
+PAGINATION_QUERY = HERE / "queries/pagination.graphql"
 
 ALL_QUERIES = [
     FILMS_QUERY,
@@ -18,4 +19,5 @@ ALL_QUERIES = [
     SPECIES_QUERY,
     VEHICLES_QUERY,
     STARSHIP_QUERY,
+    PAGINATION_QUERY,
 ]

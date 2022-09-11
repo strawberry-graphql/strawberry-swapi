@@ -4,6 +4,7 @@ from typing import Any, Callable, cast
 import strawberry
 from strawberry.types.info import Info
 from swapi.context import Context
+from swapi.node import Node
 from swapi.page_info import PageInfo
 
 
@@ -88,20 +89,27 @@ async def get_connection_object(
         take = -last
         cursor = before
 
+    if cursor is not None:
+        cursor = Node.get_id_from_string(cursor)
+
     count = await table.count(where=additional_filters)
     data = await table.find_many(
         cursor={"id": int(cursor)} if cursor else None,
-        take=take,
-        # skip the cursor
-        skip=1 if cursor else 0,
+        take=take + 1,
+        skip=0,
         where=additional_filters,
-        # TODO: add this back
-        # order={"id": "asc"},
+        order={"id": "asc"},
     )
 
-    # TODO: fetch if has next/prev pages
+    start_cursor = None
+    end_cursor = None
+    # TODO: fetch if has prev pages
+    # https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination
+    # check skip
+    has_previous_page = False
+    has_next_page = len(data) > take
 
-    nodes = [NodeType.from_row(row) for row in data]
+    nodes = [NodeType.from_row(row) for row in data]  # type: ignore
 
     kwargs = (
         {
@@ -112,7 +120,12 @@ async def get_connection_object(
     )
 
     return ConnectionType(
-        page_info=PageInfo(has_next_page=False, has_previous_page=False),
+        page_info=PageInfo(
+            has_next_page=has_next_page,
+            has_previous_page=has_previous_page,
+            start_cursor=start_cursor,
+            end_cursor=end_cursor,
+        ),
         edges=[EdgeType(node=node, cursor=node.id) for node in nodes],
         total_count=count,
         **kwargs,
