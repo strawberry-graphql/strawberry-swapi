@@ -26,6 +26,12 @@
           id
         }
       }
+      filmConnection(first: 100) {
+        totalCount
+        films {
+          id
+        }
+      }
     }
   }
 }
