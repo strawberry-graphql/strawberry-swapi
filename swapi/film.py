@@ -25,9 +25,9 @@ class FilmSpeciesEdge(SpeciesEdge):
 @strawberry.type
 class FilmSpeciesConnection:
     page_info: PageInfo
-    edges: list[FilmSpeciesEdge | None]
+    edges: list[FilmSpeciesEdge | None] | None
     total_count: int | None
-    species: list[Species]
+    species: list[Species | None] | None
 
 
 @strawberry.type
@@ -38,9 +38,9 @@ class FilmStarshipsEdge(StarshipsEdge):
 @strawberry.type
 class FilmStarshipsConnection:
     page_info: PageInfo
-    edges: list[FilmStarshipsEdge | None]
+    edges: list[FilmStarshipsEdge | None] | None
     total_count: int | None
-    starships: list[Starship]
+    starships: list[Starship | None] | None
 
 
 @strawberry.type
@@ -51,9 +51,9 @@ class FilmVehiclesEdge(VehiclesEdge):
 @strawberry.type
 class FilmVehiclesConnection:
     page_info: PageInfo
-    edges: list[FilmVehiclesEdge | None]
+    edges: list[FilmVehiclesEdge | None] | None
     total_count: int | None
-    vehicles: list[Vehicle]
+    vehicles: list[Vehicle | None] | None
 
 
 @strawberry.type
@@ -64,23 +64,23 @@ class FilmPlanetsEdge(PlanetsEdge):
 @strawberry.type
 class FilmPlanetsConnection:
     page_info: PageInfo
-    edges: list[FilmPlanetsEdge | None]
+    edges: list[FilmPlanetsEdge | None] | None
     total_count: int | None
-    planets: list[Planet]
+    planets: list[Planet | None] | None
 
 
 @strawberry.type
 class FilmCharactersEdge:
     cursor: str
-    node: Annotated["Person", strawberry.lazy(".people")]
+    node: Annotated["Person", strawberry.lazy(".people")] | None
 
 
 @strawberry.type
 class FilmCharactersConnection:
     page_info: PageInfo
-    edges: list[FilmCharactersEdge | None]
+    edges: list[FilmCharactersEdge | None] | None
     total_count: int | None
-    characters: list[Annotated["Person", strawberry.lazy(".people")]]
+    characters: list[Annotated["Person", strawberry.lazy(".people")] | None] | None
 
 
 @strawberry.type(description="A single film.")
@@ -95,7 +95,7 @@ class Film(Node):
     director: str | None = strawberry.field(
         description="The name of the director of this film."
     )
-    producers: list[str | None] = strawberry.field(
+    producers: list[str | None] | None = strawberry.field(
         description="The name(s) of the producer(s) of this film."
     )
     release_date: str | None = strawberry.field(
@@ -194,7 +194,6 @@ class Film(Node):
         )
 
 
-# TODO: make this generic
 @strawberry.type
 class FilmsEdge:
     node: Film | None
@@ -209,6 +208,6 @@ class FilmsEdge:
 @strawberry.type
 class FilmsConnection:
     page_info: PageInfo
-    edges: list[FilmsEdge | None]
+    edges: list[FilmsEdge | None] | None
     total_count: int | None
-    films: list[Film]
+    films: list[Film | None] | None

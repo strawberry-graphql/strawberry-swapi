@@ -17,29 +17,29 @@ if TYPE_CHECKING:
 @strawberry.type
 class PlanetResidentsEdge:
     cursor: str
-    node: Annotated["Person", strawberry.lazy(".people")]
+    node: Annotated["Person", strawberry.lazy(".people")] | None
 
 
 @strawberry.type
 class PlanetResidentsConnection:
     page_info: PageInfo
-    edges: list[PlanetResidentsEdge | None]
+    edges: list[PlanetResidentsEdge | None] | None
     total_count: int | None
-    residents: list[Annotated["Person", strawberry.lazy(".people")]]
+    residents: list[Annotated["Person", strawberry.lazy(".people")] | None] | None
 
 
 @strawberry.type
 class PlanetFilmsEdge:
     cursor: str
-    node: Annotated["Film", strawberry.lazy(".film")]
+    node: Annotated["Film", strawberry.lazy(".film")] | None
 
 
 @strawberry.type
 class PlanetFilmsConnection:
     page_info: PageInfo
-    edges: list[PlanetFilmsEdge | None]
+    edges: list[PlanetFilmsEdge | None] | None
     total_count: int | None
-    films: list[Annotated["Film", strawberry.lazy(".film")]]
+    films: list[Annotated["Film", strawberry.lazy(".film")] | None] | None
 
 
 @strawberry.type
@@ -109,6 +109,6 @@ class PlanetsEdge:
 @strawberry.type
 class PlanetsConnection:
     page_info: PageInfo
-    edges: list[PlanetsEdge]
-    total_count: int
-    planets: list[Planet]
+    edges: list[PlanetsEdge | None] | None
+    total_count: int | None
+    planets: list[Planet | None] | None

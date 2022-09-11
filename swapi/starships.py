@@ -18,29 +18,29 @@ if TYPE_CHECKING:
 @strawberry.type
 class StarshipPilotsEdge:
     cursor: str
-    node: Annotated["Person", strawberry.lazy(".people")]
+    node: Annotated["Person", strawberry.lazy(".people")] | None
 
 
 @strawberry.type
 class StarshipPilotsConnection:
     page_info: PageInfo
-    edges: list[StarshipPilotsEdge | None]
+    edges: list[StarshipPilotsEdge | None] | None
     total_count: int | None
-    pilots: list[Annotated["Person", strawberry.lazy(".people")]]
+    pilots: list[Annotated["Person", strawberry.lazy(".people")] | None] | None
 
 
 @strawberry.type
 class StarshipFilmsEdge:
     cursor: str
-    node: Annotated["Film", strawberry.lazy(".film")]
+    node: Annotated["Film", strawberry.lazy(".film")] | None
 
 
 @strawberry.type
 class StarshipFilmsConnection:
     page_info: PageInfo
-    edges: list[StarshipFilmsEdge | None]
+    edges: list[StarshipFilmsEdge | None] | None
     total_count: int | None
-    films: list[Annotated["Film", strawberry.lazy(".film")]]
+    films: list[Annotated["Film", strawberry.lazy(".film")] | None] | None
 
 
 @strawberry.type
@@ -56,7 +56,7 @@ class Starship(Node):
     crew: str | None = None
     passengers: str | None = None
     cargo_capacity: float | None = None
-    manufacturers: list[str] | None = None
+    manufacturers: list[str | None] | None = None
     consumables: str | None = None
     MGLT: int | None = None
     starship_class: str | None = None
@@ -118,6 +118,6 @@ class StarshipsEdge:
 @strawberry.type
 class StarshipsConnection:
     page_info: PageInfo
-    edges: list[StarshipsEdge]
+    edges: list[StarshipsEdge | None] | None
     total_count: int | None
-    starships: list[Starship | None]
+    starships: list[Starship | None] | None

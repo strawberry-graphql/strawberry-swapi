@@ -21,35 +21,35 @@ if TYPE_CHECKING:
 @strawberry.type
 class SpeciesPeopleEdge:
     cursor: str
-    node: Annotated["Person", strawberry.lazy(".people")]
+    node: Annotated["Person", strawberry.lazy(".people")] | None
 
 
 @strawberry.type
 class SpeciesPeopleConnection:
     page_info: PageInfo
-    edges: list[SpeciesPeopleEdge | None]
+    edges: list[SpeciesPeopleEdge | None] | None
     total_count: int | None
-    people: list[Annotated["Person", strawberry.lazy(".people")]]
+    people: list[Annotated["Person", strawberry.lazy(".people")] | None] | None
 
 
 @strawberry.type
 class SpeciesFilmsEdge:
     cursor: str
-    node: Annotated["Film", strawberry.lazy(".film")]
+    node: Annotated["Film", strawberry.lazy(".film")] | None
 
 
 @strawberry.type
 class SpeciesFilmsConnection:
     page_info: PageInfo
-    edges: list[SpeciesFilmsEdge | None]
+    edges: list[SpeciesFilmsEdge | None] | None
     total_count: int | None
-    films: list[Annotated["Film", strawberry.lazy(".film")]]
+    films: list[Annotated["Film", strawberry.lazy(".film")] | None] | None
 
 
 @strawberry.type
 class Species(Node):
     id: strawberry.ID
-    name: str
+    name: str | None
     homeworld_id: strawberry.Private[int | None]
     created: str | None = None
     edited: str | None = None
@@ -127,6 +127,6 @@ class SpeciesEdge:
 @strawberry.type
 class SpeciesConnection:
     page_info: PageInfo
-    edges: list[SpeciesEdge]
-    total_count: int
-    species: list[Species]
+    edges: list[SpeciesEdge | None] | None
+    total_count: int | None
+    species: list[Species | None] | None

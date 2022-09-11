@@ -17,45 +17,45 @@ if TYPE_CHECKING:
 @strawberry.type
 class VehiclePilotsEdge:
     cursor: str
-    node: Annotated["Person", strawberry.lazy(".people")]
+    node: Annotated["Person", strawberry.lazy(".people")] | None
 
 
 @strawberry.type
 class VehiclePilotsConnection:
     page_info: PageInfo
-    edges: list[VehiclePilotsEdge | None]
+    edges: list[VehiclePilotsEdge | None] | None
     total_count: int | None
-    pilots: list[Annotated["Person", strawberry.lazy(".people")]]
+    pilots: list[Annotated["Person", strawberry.lazy(".people")] | None] | None
 
 
 @strawberry.type
 class VehicleFilmsEdge:
     cursor: str
-    node: Annotated["Film", strawberry.lazy(".film")]
+    node: Annotated["Film", strawberry.lazy(".film")] | None
 
 
 @strawberry.type
 class VehicleFilmsConnection:
     page_info: PageInfo
-    edges: list[VehicleFilmsEdge | None]
+    edges: list[VehicleFilmsEdge | None] | None
     total_count: int | None
-    films: list[Annotated["Film", strawberry.lazy(".film")]]
+    films: list[Annotated["Film", strawberry.lazy(".film")] | None] | None
 
 
 @strawberry.type
 class Vehicle(Node):
     id: strawberry.ID
-    name: str
-    model: str
-    vehicle_class: str
-    manufacturers: list[str]
+    name: str | None
+    model: str | None
+    vehicle_class: str | None
+    manufacturers: list[str | None] | None
     length: float | None
     cost_in_credits: float | None
-    crew: str
-    passengers: str
+    crew: str | None
+    passengers: str | None
     max_atmosphering_speed: int | None
     cargo_capacity: float | None
-    consumables: str
+    consumables: str | None
     created: str | None = None
     edited: str | None = None
 
@@ -114,6 +114,6 @@ class VehiclesEdge:
 @strawberry.type
 class VehiclesConnection:
     page_info: PageInfo
-    edges: list[VehiclesEdge]
-    total_count: int
-    vehicles: list[Vehicle]
+    edges: list[VehiclesEdge | None] | None
+    total_count: int | None
+    vehicles: list[Vehicle | None] | None

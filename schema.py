@@ -144,8 +144,9 @@ class Root:
     def node(
         self,
         info: Info[Context, None],
-        id: strawberry.ID | None,
+        id: strawberry.ID,
     ) -> Node | None:
+        # TODO: implement this
         return None
 
 

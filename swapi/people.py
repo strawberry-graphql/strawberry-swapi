@@ -23,9 +23,9 @@ class PersonFilmsEdge(FilmsEdge):
 @strawberry.type
 class PersonFilmsConnection:
     page_info: PageInfo
-    edges: list[PersonFilmsEdge | None]
+    edges: list[PersonFilmsEdge | None] | None
     total_count: int | None
-    films: list[Film]
+    films: list[Film | None] | None
 
 
 @strawberry.type
@@ -36,9 +36,9 @@ class PersonStarshipsEdge(StarshipsEdge):
 @strawberry.type
 class PersonStarshipsConnection:
     page_info: PageInfo
-    edges: list[PersonStarshipsEdge | None]
+    edges: list[PersonStarshipsEdge | None] | None
     total_count: int | None
-    starships: list[Starship]
+    starships: list[Starship | None] | None
 
 
 @strawberry.type
@@ -49,9 +49,9 @@ class PersonVehiclesEdge(VehiclesEdge):
 @strawberry.type
 class PersonVehiclesConnection:
     page_info: PageInfo
-    edges: list[PersonVehiclesEdge | None]
+    edges: list[PersonVehiclesEdge | None] | None
     total_count: int | None
-    vehicles: list[Vehicle]
+    vehicles: list[Vehicle | None] | None
 
 
 @strawberry.type
@@ -165,6 +165,6 @@ class PeopleEdge:
 @strawberry.type
 class PeopleConnection:
     page_info: PageInfo
-    edges: list[PeopleEdge]
-    total_count: int
-    people: list[Person]
+    edges: list[PeopleEdge | None] | None
+    total_count: int | None
+    people: list[Person | None] | None
