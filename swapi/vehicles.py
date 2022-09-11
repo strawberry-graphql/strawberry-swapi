@@ -1,11 +1,45 @@
 import json
+from typing import TYPE_CHECKING, Annotated
 
 import prisma
 import strawberry
 
 from .node import Node
 from .page_info import PageInfo
+from .utils.connections import get_connection_resolver
 from .utils.datetime import format_datetime
+
+if TYPE_CHECKING:
+    from .film import Film
+    from .people import Person
+
+
+@strawberry.type
+class VehiclePilotsEdge:
+    cursor: str
+    node: Annotated["Person", strawberry.lazy(".people")]
+
+
+@strawberry.type
+class VehiclePilotsConnection:
+    page_info: PageInfo
+    edges: list[VehiclePilotsEdge | None]
+    total_count: int | None
+    pilots: list[Annotated["Person", strawberry.lazy(".people")]]
+
+
+@strawberry.type
+class VehicleFilmsEdge:
+    cursor: str
+    node: Annotated["Film", strawberry.lazy(".film")]
+
+
+@strawberry.type
+class VehicleFilmsConnection:
+    page_info: PageInfo
+    edges: list[VehicleFilmsEdge | None]
+    total_count: int | None
+    films: list[Annotated["Film", strawberry.lazy(".film")]]
 
 
 @strawberry.type
@@ -24,6 +58,32 @@ class Vehicle(Node):
     consumables: str
     created: str | None = None
     edited: str | None = None
+
+    pilot_connection: VehiclePilotsConnection | None = strawberry.field(
+        resolver=get_connection_resolver(
+            "person",
+            VehiclePilotsConnection,
+            VehiclePilotsEdge,
+            "swapi.people.Person",
+            attribute_name="pilots",
+            get_additional_filters=lambda root: {
+                "vehicles": {"some": {"id": Node.get_id(root)}}
+            },
+        )
+    )
+
+    film_connection: VehicleFilmsConnection | None = strawberry.field(
+        resolver=get_connection_resolver(
+            "film",
+            VehicleFilmsConnection,
+            VehicleFilmsEdge,
+            "swapi.film.Film",
+            attribute_name="films",
+            get_additional_filters=lambda root: {
+                "vehicles": {"some": {"id": Node.get_id(root)}}
+            },
+        )
+    )
 
     @classmethod
     def from_row(cls, row: prisma.models.Vehicle) -> "Vehicle":

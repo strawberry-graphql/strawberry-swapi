@@ -18,6 +18,18 @@
       consumables
       created
       edited
+      filmConnection {
+        totalCount
+        films {
+          id
+        }
+      }
+      pilotConnection {
+        totalCount
+        pilots {
+          id
+        }
+      }
     }
   }
 }
