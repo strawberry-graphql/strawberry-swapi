@@ -113,8 +113,8 @@ async def get_connection_object(
         data = data[1:]
 
     if len(data) > 0:
-        start_cursor = Node.get_global_id("arrayconnection", data[0].id)
-        end_cursor = Node.get_global_id("arrayconnection", data[-1].id)
+        start_cursor = Node.get_global_id(EdgeType.__name__, data[0].id)
+        end_cursor = Node.get_global_id(EdgeType.__name__, data[-1].id)
     else:
         start_cursor = None
         end_cursor = None
