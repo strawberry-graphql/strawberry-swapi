@@ -140,36 +140,3 @@ async def get_connection_object(
         total_count=count,
         **kwargs,
     )
-
-
-def get_generic_connection(
-    table_name: str,
-    ConnectionType: type,
-    EdgeType: type,
-    NodeType: type,
-) -> Callable:
-    async def _connection(
-        root: object,
-        info: Info[Context, None],
-        after: str | None = None,
-        first: int | None = None,
-        before: str | None = None,
-        last: int | None = None,
-    ):
-        db = info.context["db"]
-
-        # TODO: filter
-        table = getattr(db, table_name)
-
-        return await get_connection_object(
-            table,
-            ConnectionType,
-            EdgeType,
-            NodeType,
-            after=after,
-            first=first,
-            before=before,
-            last=last,
-        )
-
-    return _connection
