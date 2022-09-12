@@ -77,37 +77,47 @@ async def get_connection_object(
     last = last if last is not strawberry.UNSET else None
     additional_filters = additional_filters or {}
 
-    if first is None and last is None:
-        first = 30
-
     take = first
     cursor = after
 
     if take is None:
         assert last is not None
 
-        take = -last
+        take = -last - 1
         cursor = before
+    else:
+        take = take + 1
 
     if cursor is not None:
         cursor = Node.get_id_from_string(cursor)
 
+    # prisma includes the cursor in the result set, so we need to skip it
+    skip = 1 if cursor is not None else 0
+
     count = await table.count(where=additional_filters)
     data = await table.find_many(
-        cursor={"id": int(cursor)} if cursor else None,
-        take=take + 1,
-        skip=0,
+        cursor={"id": cursor} if cursor else None,
+        take=take,
+        skip=skip,
         where=additional_filters,
         order={"id": "asc"},
     )
 
-    start_cursor = None
-    end_cursor = None
-    # TODO: fetch if has prev pages
-    # https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination
-    # check skip
-    has_previous_page = False
-    has_next_page = len(data) > take
+    has_next_page = first is not None and len(data) > first
+    has_previous_page = last is not None and len(data) > last
+
+    if has_next_page:
+        data = data[:-1]
+
+    if has_previous_page:
+        data = data[1:]
+
+    if len(data) > 0:
+        start_cursor = Node.get_global_id("arrayconnection", data[0].id)
+        end_cursor = Node.get_global_id("arrayconnection", data[-1].id)
+    else:
+        start_cursor = None
+        end_cursor = None
 
     nodes = [NodeType.from_row(row) for row in data]  # type: ignore
 
