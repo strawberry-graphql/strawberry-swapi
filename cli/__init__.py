@@ -5,10 +5,11 @@ import rich
 import typer
 from jsondiff import diff
 
-from .constants import ALL_QUERIES, INTROSPECTION_QUERY, REFERENCE_API_URL
+from .constants import ALL_QUERIES, REFERENCE_API_URL
 from .importer import Importer
 from .utils.query import query
 from .utils.wait_for_port import wait_for_port
+
 
 app = typer.Typer()
 

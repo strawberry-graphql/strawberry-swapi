@@ -2,12 +2,14 @@ import json
 from typing import TYPE_CHECKING, Annotated
 
 import prisma
+
 import strawberry
 
 from .node import Node
 from .page_info import PageInfo
 from .utils.connections import get_connection_resolver
 from .utils.datetime import format_datetime
+
 
 if TYPE_CHECKING:
     from .film import Film

@@ -2,16 +2,18 @@ import json
 from typing import TYPE_CHECKING, Annotated
 
 import prisma
+
 import strawberry
 
 from .node import Node
 from .page_info import PageInfo
+from .planets import Planet, PlanetsEdge
 from .species import Species, SpeciesEdge
 from .starships import Starship, StarshipsEdge
-from .vehicles import Vehicle, VehiclesEdge
-from .planets import Planet, PlanetsEdge
 from .utils.connections import get_connection_resolver
 from .utils.datetime import format_datetime
+from .vehicles import Vehicle, VehiclesEdge
+
 
 if TYPE_CHECKING:
     from .people import Person

@@ -1,21 +1,22 @@
 import json
-
-import prisma
-import strawberry
 from typing import TYPE_CHECKING, Annotated
 
-from strawberry.types.info import Info
-from .context import Context
+import prisma
 
+import strawberry
+from strawberry.types.info import Info
+
+from .context import Context
 from .node import Node
-from .planets import Planet
 from .page_info import PageInfo
-from .utils.datetime import format_datetime
+from .planets import Planet
 from .utils.connections import get_connection_resolver
+from .utils.datetime import format_datetime
+
 
 if TYPE_CHECKING:
-    from .people import Person
     from .film import Film
+    from .people import Person
 
 
 @strawberry.type

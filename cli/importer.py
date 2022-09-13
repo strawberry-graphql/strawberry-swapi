@@ -11,8 +11,8 @@ from .constants import (
     PLANETS_QUERY,
     REFERENCE_API_URL,
     SPECIES_QUERY,
-    VEHICLES_QUERY,
     STARSHIP_QUERY,
+    VEHICLES_QUERY,
 )
 from .utils.query import query
 
@@ -116,12 +116,6 @@ class Importer:
                             for planet in film["planetConnection"]["planets"]
                         ]
                     },
-                    # "characters": {
-                    #     "connect": [
-                    #         {"id": self._parse_id(character["id"])}
-                    #         for character in film["characterConnection"]["characters"]
-                    #     ]
-                    # },
                 }
             )
 

@@ -1,8 +1,8 @@
 import prisma
+from swapi.utils.datetime import format_datetime
+
 import strawberry
 from strawberry.types.info import Info
-
-from swapi.utils.datetime import format_datetime
 
 from .context import Context
 from .film import Film, FilmsEdge

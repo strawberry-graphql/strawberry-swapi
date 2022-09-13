@@ -1,8 +1,5 @@
 from typing import Annotated
 
-import strawberry
-from strawberry.types.info import Info
-
 from swapi.context import Context
 from swapi.film import Film, FilmsConnection, FilmsEdge
 from swapi.node import Node
@@ -12,6 +9,9 @@ from swapi.species import Species, SpeciesConnection, SpeciesEdge
 from swapi.starships import Starship, StarshipsConnection, StarshipsEdge
 from swapi.utils.connections import get_connection_resolver
 from swapi.vehicles import Vehicle, VehiclesConnection, VehiclesEdge
+
+import strawberry
+from strawberry.types.info import Info
 
 
 @strawberry.type

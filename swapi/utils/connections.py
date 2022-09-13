@@ -1,11 +1,12 @@
 import importlib
 from typing import Any, Callable, cast
 
-import strawberry
-from strawberry.types.info import Info
 from swapi.context import Context
 from swapi.node import Node
 from swapi.page_info import PageInfo
+
+import strawberry
+from strawberry.types.info import Info
 
 
 def get_connection_resolver(
@@ -76,6 +77,9 @@ async def get_connection_object(
     first = first if first is not strawberry.UNSET else None
     last = last if last is not strawberry.UNSET else None
     additional_filters = additional_filters or {}
+
+    if first is None and last is None:
+        first = 30
 
     take = first
     cursor = after
