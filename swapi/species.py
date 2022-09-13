@@ -1,80 +1,133 @@
-import typing
+import json
+from typing import TYPE_CHECKING, Annotated
+
+import prisma
 
 import strawberry
+from strawberry.types.info import Info
 
-from tables import species
-
+from .context import Context
+from .node import Node
 from .page_info import PageInfo
+from .planets import Planet
+from .utils.connections import get_connection_resolver
+from .utils.datetime import format_datetime
+
+
+if TYPE_CHECKING:
+    from .film import Film
+    from .people import Person
 
 
 @strawberry.type
-class Specie:
+class SpeciesPeopleEdge:
+    cursor: str
+    node: Annotated["Person", strawberry.lazy(".people")] | None
+
+
+@strawberry.type
+class SpeciesPeopleConnection:
+    page_info: PageInfo
+    edges: list[SpeciesPeopleEdge | None] | None
+    total_count: int | None
+    people: list[Annotated["Person", strawberry.lazy(".people")] | None] | None
+
+
+@strawberry.type
+class SpeciesFilmsEdge:
+    cursor: str
+    node: Annotated["Film", strawberry.lazy(".film")] | None
+
+
+@strawberry.type
+class SpeciesFilmsConnection:
+    page_info: PageInfo
+    edges: list[SpeciesFilmsEdge | None] | None
+    total_count: int | None
+    films: list[Annotated["Film", strawberry.lazy(".film")] | None] | None
+
+
+@strawberry.type
+class Species(Node):
     id: strawberry.ID
-    name: str
-    created: typing.Optional[str] = None
-    edited: typing.Optional[str] = None
-    designation: typing.Optional[str] = None
-    eye_colors: typing.List[str] = None
-    skin_colors: typing.List[str] = None
-    hair_colors: typing.List[str] = None
-    language: typing.Optional[str] = None
-    average_lifespan: typing.Optional[int] = None
-    average_height: typing.Optional[int] = None
+    name: str | None
+    homeworld_id: strawberry.Private[int | None]
+    created: str | None = None
+    edited: str | None = None
+    classification: str | None = None
+    designation: str | None = None
+    eye_colors: list[str | None] | None = None
+    skin_colors: list[str | None] | None = None
+    hair_colors: list[str | None] | None = None
+    language: str | None = None
+    average_lifespan: int | None = None
+    average_height: float | None = None
+
+    @strawberry.field
+    async def homeworld(self, info: Info[Context, None]) -> Planet | None:
+        from .planets import Planet
+
+        db = info.context["db"]
+
+        if self.homeworld_id is None:
+            return None
+
+        planet = await db.planet.find_first(where={"id": self.homeworld_id})
+
+        return Planet.from_row(planet) if planet is not None else None
+
+    person_connection: SpeciesPeopleConnection | None = strawberry.field(
+        resolver=get_connection_resolver(
+            "person",
+            SpeciesPeopleConnection,
+            SpeciesPeopleEdge,
+            "swapi.people.Person",
+            attribute_name="people",
+            get_additional_filters=lambda root: {"species": {"id": Node.get_id(root)}},
+        )
+    )
+
+    film_connection: SpeciesFilmsConnection | None = strawberry.field(
+        resolver=get_connection_resolver(
+            "film",
+            SpeciesFilmsConnection,
+            SpeciesFilmsEdge,
+            "swapi.film.Film",
+            attribute_name="films",
+            get_additional_filters=lambda root: {
+                "species": {"some": {"id": Node.get_id(root)}}
+            },
+        )
+    )
+
+    @classmethod
+    def from_row(cls, row: prisma.models.Species) -> "Species":
+        return cls(
+            id=strawberry.ID(Node.get_global_id("species", row.id)),
+            homeworld_id=row.homeworld_id,
+            name=row.name,
+            designation=row.designation,
+            classification=row.classification,
+            eye_colors=json.loads(row.eye_colors),
+            skin_colors=json.loads(row.skin_colors),
+            hair_colors=json.loads(row.hair_colors),
+            language=row.language,
+            average_lifespan=row.average_lifespan,
+            average_height=row.average_height,
+            created=format_datetime(row.created),
+            edited=format_datetime(row.edited),
+        )
 
 
 @strawberry.type
 class SpeciesEdge:
-    node: typing.Optional[Specie]
+    node: Species | None
     cursor: str
-
-    @staticmethod
-    def from_row(row):
-        id_ = row[species.c.id]
-
-        return SpeciesEdge(
-            cursor=id_,
-            node=Specie(
-                id=id_,
-                name=row[species.c.name],
-                created=row[species.c.created],
-                edited=row[species.c.edited],
-                designation=row[species.c.designation],
-                eye_colors=[
-                    color.strip()
-                    for color in row[species.c.eye_colors].split(",")
-                ],
-                skin_colors=[
-                    color.strip()
-                    for color in row[species.c.skin_colors].split(",")
-                ],
-                hair_colors=[
-                    color.strip()
-                    for color in row[species.c.hair_colors].split(",")
-                ],
-                language=row[species.c.language],
-                average_lifespan=row[species.c.average_lifespan],
-                average_height=row[species.c.average_height],
-            ),
-        )
 
 
 @strawberry.type
 class SpeciesConnection:
     page_info: PageInfo
-    edges: typing.List[SpeciesEdge]
-    total_count: int
-    species: typing.List[Specie] = None
-
-
-@strawberry.type
-class FilmSpeciesEdge(SpeciesEdge):
-    @staticmethod
-    def from_row(row):
-        id_ = row[species.c.id]
-
-        return FilmSpeciesEdge(cursor=id_, node=Specie.from_row(row))
-
-
-@strawberry.type
-class FilmSpeciesConnection(SpeciesConnection):
-    edges: typing.List[typing.Optional[FilmSpeciesEdge]]
+    edges: list[SpeciesEdge | None] | None
+    total_count: int | None
+    species: list[Species | None] | None

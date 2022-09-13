@@ -1,114 +1,153 @@
-import typing
+from typing import Annotated
+
+from swapi.context import Context
+from swapi.film import Film, FilmsConnection, FilmsEdge
+from swapi.node import Node
+from swapi.people import PeopleConnection, PeopleEdge, Person
+from swapi.planets import Planet, PlanetsConnection, PlanetsEdge
+from swapi.species import Species, SpeciesConnection, SpeciesEdge
+from swapi.starships import Starship, StarshipsConnection, StarshipsEdge
+from swapi.utils.connections import get_connection_resolver
+from swapi.vehicles import Vehicle, VehiclesConnection, VehiclesEdge
 
 import strawberry
-from swapi.film import FilmsConnection, FilmsEdge
-from swapi.people import PeopleConnection, PeopleEdge, Person
-from swapi.planets import PlanetsConnection, PlanetsEdge
-from swapi.starships import StarshipsConnection, StarshipsEdge
-
-from tables import database, movies, people, planets, starships
-from utils import get_connection_object
+from strawberry.types.info import Info
 
 
 @strawberry.type
 class Root:
-    @strawberry.field
-    async def all_films(
-        self,
-        info,
-        after: typing.Optional[str] = None,
-        first: typing.Optional[int] = None,
-        before: typing.Optional[str] = None,
-        last: typing.Optional[int] = None,
-    ) -> typing.Optional[FilmsConnection]:
-        return await get_connection_object(
-            movies,
+    all_films: FilmsConnection | None = strawberry.field(
+        resolver=get_connection_resolver(
+            "film",
             FilmsConnection,
             FilmsEdge,
-            after=after,
-            first=first,
-            before=before,
-            last=last,
+            Film,
+            attribute_name="films",
         )
+    )
 
-    @strawberry.field
-    async def person(
-        self,
-        info,
-        id: typing.Optional[strawberry.ID] = None,
-        person_id: typing.Optional[strawberry.ID] = None,
-    ) -> typing.Optional[Person]:
-        if id is None and person_id is None:
-            raise ValueError("must provide id or personID")
-
-        # TODO: relay ids
-        id = id or person_id
-
-        query = people.select().where(people.c.id == id)
-
-        row = await database.fetch_one(query=query)
-
-        if not row:
-            return None
-
-        return Person.from_row(row)
-
-    @strawberry.field
-    async def all_people(
-        self,
-        info,
-        after: typing.Optional[str] = None,
-        first: typing.Optional[int] = None,
-        before: typing.Optional[str] = None,
-        last: typing.Optional[int] = None,
-    ) -> typing.Optional[PeopleConnection]:
-        return await get_connection_object(
-            people,
+    all_people: PeopleConnection | None = strawberry.field(
+        resolver=get_connection_resolver(
+            "person",
             PeopleConnection,
             PeopleEdge,
-            after=after,
-            first=first,
-            before=before,
-            last=last,
+            Person,
+            attribute_name="people",
         )
+    )
 
-    @strawberry.field
-    async def all_planets(
-        self,
-        info,
-        after: typing.Optional[str] = None,
-        first: typing.Optional[int] = None,
-        before: typing.Optional[str] = None,
-        last: typing.Optional[int] = None,
-    ) -> typing.Optional[PlanetsConnection]:
-        return await get_connection_object(
-            planets,
+    all_planets: PlanetsConnection | None = strawberry.field(
+        resolver=get_connection_resolver(
+            "planet",
             PlanetsConnection,
             PlanetsEdge,
-            after=after,
-            first=first,
-            before=before,
-            last=last,
+            Planet,
+            attribute_name="planets",
         )
+    )
 
-    @strawberry.field
-    async def all_starships(
-        self,
-        info,
-        after: typing.Optional[str] = None,
-        first: typing.Optional[int] = None,
-        before: typing.Optional[str] = None,
-        last: typing.Optional[int] = None,
-    ) -> typing.Optional[StarshipsConnection]:
-        return await get_connection_object(
-            starships,
+    all_species: SpeciesConnection | None = strawberry.field(
+        resolver=get_connection_resolver(
+            "species",
+            SpeciesConnection,
+            SpeciesEdge,
+            Species,
+            attribute_name="species",
+        )
+    )
+
+    all_vehicles: VehiclesConnection | None = strawberry.field(
+        resolver=get_connection_resolver(
+            "vehicle",
+            VehiclesConnection,
+            VehiclesEdge,
+            Vehicle,
+            attribute_name="vehicles",
+        )
+    )
+
+    all_starships: StarshipsConnection | None = strawberry.field(
+        resolver=get_connection_resolver(
+            "starship",
             StarshipsConnection,
             StarshipsEdge,
-            after=after,
-            first=first,
-            before=before,
-            last=last,
+            Starship,
+            attribute_name="starships",
         )
+    )
+
+    @strawberry.field
+    def film(
+        self,
+        info: Info[Context, None],
+        id: strawberry.ID | None,
+        film_id: Annotated[strawberry.ID | None, strawberry.argument(name="filmID")],
+    ) -> Film | None:
+        return None
+
+    @strawberry.field
+    def person(
+        self,
+        info: Info[Context, None],
+        id: strawberry.ID | None,
+        person_id: Annotated[
+            strawberry.ID | None, strawberry.argument(name="personID")
+        ],
+    ) -> Person | None:
+        return None
+
+    @strawberry.field
+    def planet(
+        self,
+        info: Info[Context, None],
+        id: strawberry.ID | None,
+        planet_id: Annotated[
+            strawberry.ID | None, strawberry.argument(name="planetID")
+        ],
+    ) -> Planet | None:
+        return None
+
+    @strawberry.field
+    def species(
+        self,
+        info: Info[Context, None],
+        id: strawberry.ID | None,
+        species_id: Annotated[
+            strawberry.ID | None, strawberry.argument(name="speciesID")
+        ],
+    ) -> Species | None:
+        return None
+
+    @strawberry.field
+    def vehicle(
+        self,
+        info: Info[Context, None],
+        id: strawberry.ID | None,
+        vehicle_id: Annotated[
+            strawberry.ID | None, strawberry.argument(name="vehicleID")
+        ],
+    ) -> Vehicle | None:
+        return None
+
+    @strawberry.field
+    def starship(
+        self,
+        info: Info[Context, None],
+        id: strawberry.ID | None,
+        starship_id: Annotated[
+            strawberry.ID | None, strawberry.argument(name="starshipID")
+        ],
+    ) -> Starship | None:
+        return None
+
+    @strawberry.field
+    def node(
+        self,
+        info: Info[Context, None],
+        id: strawberry.ID,
+    ) -> Node | None:
+        # TODO: implement this
+        return None
 
 
 schema = strawberry.Schema(query=Root)

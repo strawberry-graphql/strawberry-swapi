@@ -1,0 +1,36 @@
+{
+  allSpecies(first: 100) {
+    pageInfo {
+      hasNextPage
+    }
+    species {
+      id
+      name
+      classification
+      designation
+      averageHeight
+      averageLifespan
+      eyeColors
+      hairColors
+      skinColors
+      language
+      homeworld {
+        id
+      }
+      created
+      edited
+      personConnection(first: 100) {
+        totalCount
+        people {
+          id
+        }
+      }
+      filmConnection(first: 100) {
+        totalCount
+        films {
+          id
+        }
+      }
+    }
+  }
+}

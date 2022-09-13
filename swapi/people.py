@@ -1,84 +1,170 @@
-import typing
+import prisma
+from swapi.utils.datetime import format_datetime
 
 import strawberry
+from strawberry.types.info import Info
 
-from tables import database, people, planets, starships
-from utils import get_generic_connection
-
+from .context import Context
+from .film import Film, FilmsEdge
 from .node import Node
 from .page_info import PageInfo
 from .planets import Planet
-from .starships import PersonStarshipsConnection, PersonStarshipsEdge
+from .species import Species
+from .starships import Starship, StarshipsEdge
+from .utils.connections import get_connection_resolver
+from .vehicles import Vehicle, VehiclesEdge
+
+
+@strawberry.type
+class PersonFilmsEdge(FilmsEdge):
+    ...
+
+
+@strawberry.type
+class PersonFilmsConnection:
+    page_info: PageInfo
+    edges: list[PersonFilmsEdge | None] | None
+    total_count: int | None
+    films: list[Film | None] | None
+
+
+@strawberry.type
+class PersonStarshipsEdge(StarshipsEdge):
+    ...
+
+
+@strawberry.type
+class PersonStarshipsConnection:
+    page_info: PageInfo
+    edges: list[PersonStarshipsEdge | None] | None
+    total_count: int | None
+    starships: list[Starship | None] | None
+
+
+@strawberry.type
+class PersonVehiclesEdge(VehiclesEdge):
+    ...
+
+
+@strawberry.type
+class PersonVehiclesConnection:
+    page_info: PageInfo
+    edges: list[PersonVehiclesEdge | None] | None
+    total_count: int | None
+    vehicles: list[Vehicle | None] | None
 
 
 @strawberry.type
 class Person(Node):
-    name: typing.Optional[str]
-    # used internally, maybe it should not be exposed on GraphQL
-    homeworld_id: int
-    created: typing.Optional[str] = None
-    edited: typing.Optional[str] = None
-    gender: typing.Optional[str] = None
-    skin_color: typing.Optional[str] = None
-    hair_color: typing.Optional[str] = None
-    height: typing.Optional[int] = None
-    mass: typing.Optional[float] = None
-    eye_color: typing.Optional[str] = None
-    birth_year: typing.Optional[str] = None
+    name: str | None
+    homeworld_id: strawberry.Private[int]
+    species_id: strawberry.Private[int | None]
+    created: str | None = None
+    edited: str | None = None
+    gender: str | None = None
+    skin_color: str | None = None
+    hair_color: str | None = None
+    height: int | None = None
+    mass: float | None = None
+    eye_color: str | None = None
+    birth_year: str | None = None
 
-    starship_connection: typing.Optional[
-        "PersonStarshipsConnection"
-    ] = strawberry.field(
-        resolver=get_generic_connection(
-            starships, PersonStarshipsConnection, PersonStarshipsEdge
+    film_connection: PersonFilmsConnection | None = strawberry.field(
+        resolver=get_connection_resolver(
+            "film",
+            PersonFilmsConnection,
+            FilmsEdge,
+            Film,
+            attribute_name="films",
+            get_additional_filters=lambda root: {
+                "characters": {
+                    "some": {"id": {"equals": Node.get_id(root)}},
+                },
+            },
+        )
+    )
+
+    starship_connection: PersonStarshipsConnection | None = strawberry.field(
+        resolver=get_connection_resolver(
+            "starship",
+            PersonStarshipsConnection,
+            StarshipsEdge,
+            Starship,
+            attribute_name="starships",
+            get_additional_filters=lambda root: {
+                "pilots": {
+                    "some": {"id": {"equals": Node.get_id(root)}},
+                },
+            },
+        )
+    )
+
+    vehicle_connection: PersonVehiclesConnection | None = strawberry.field(
+        resolver=get_connection_resolver(
+            "vehicle",
+            PersonVehiclesConnection,
+            VehiclesEdge,
+            Vehicle,
+            attribute_name="vehicles",
+            get_additional_filters=lambda root: {
+                "pilots": {
+                    "some": {"id": {"equals": Node.get_id(root)}},
+                },
+            },
         )
     )
 
     @strawberry.field
-    async def homeworld(self, info) -> typing.Optional[Planet]:
-        query = planets.select().where(planets.c.id == self.homeworld_id)
+    async def homeworld(self, info: Info[Context, None]) -> Planet | None:
+        from .planets import Planet
 
-        row = await database.fetch_one(query=query)
+        db = info.context["db"]
 
-        if not row:
-            print(self.homeworld_id)
+        planet = await db.planet.find_first(where={"id": self.homeworld_id})
+
+        return Planet.from_row(planet) if planet is not None else None
+
+    @strawberry.field
+    async def species(self, info: Info[Context, None]) -> Species | None:
+        from .species import Species
+
+        db = info.context["db"]
+
+        if self.species_id is None:
             return None
 
-        return Planet.from_row(row)
+        species = await db.species.find_first(where={"id": self.species_id})
+
+        return Species.from_row(species) if species is not None else None
 
     @staticmethod
-    def from_row(row):
+    def from_row(row: prisma.models.Person):
         return Person(
-            id=row[people.c.id],
-            name=row[people.c.name],
-            created=row[people.c.created],
-            edited=row[people.c.edited],
-            gender=row[people.c.gender],
-            skin_color=row[people.c.skin_color],
-            hair_color=row[people.c.hair_color],
-            height=row[people.c.height],
-            mass=row[people.c.mass],
-            eye_color=row[people.c.eye_color],
-            birth_year=row[people.c.birth_year],
-            homeworld_id=row[people.c.homeworld_id],
+            id=strawberry.ID(Node.get_global_id("people", row.id)),
+            name=row.name,
+            homeworld_id=row.homeworld_id,
+            species_id=row.species_id,
+            gender=row.gender,
+            skin_color=row.skin_color,
+            hair_color=row.hair_color,
+            height=row.height,
+            mass=row.mass,
+            eye_color=row.eye_color,
+            birth_year=row.birth_year,
+            created=format_datetime(row.created),
+            edited=format_datetime(row.edited),
         )
 
 
 @strawberry.type
 class PeopleEdge:
-    node: typing.Optional[Person]
+    node: Person | None
     cursor: str
-
-    @staticmethod
-    def from_row(row):
-        id_ = row[people.c.id]
-
-        return PeopleEdge(cursor=id_, node=Person.from_row(row))
 
 
 @strawberry.type
 class PeopleConnection:
     page_info: PageInfo
-    edges: typing.List[PeopleEdge]
-    total_count: int
-    people: typing.List[Person] = None
+    edges: list[PeopleEdge | None] | None
+    total_count: int | None
+    people: list[Person | None] | None

@@ -1,0 +1,124 @@
+generator db {
+  provider  = "prisma-client-py"
+  interface = "asyncio"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:db.sqlite3"
+}
+
+model Film {
+  id            Int        @id
+  title         String
+  episode_id    Int
+  opening_crawl String
+  director      String
+  producers     String
+  release_date  DateTime
+  created       DateTime
+  edited        DateTime
+  characters    Person[]
+  species       Species[]
+  starships     Starship[]
+  vehicles      Vehicle[]
+  planets       Planet[]
+}
+
+model Person {
+  id           Int        @id
+  name         String
+  height       Int?
+  mass         Float?
+  eye_color    String
+  birth_year   String
+  gender       String
+  hair_color   String
+  skin_color   String
+  created      DateTime
+  edited       DateTime
+  homeworld_id Int
+  homeworld    Planet     @relation(fields: [homeworld_id], references: [id])
+  species_id   Int?
+  species      Species?   @relation(fields: [species_id], references: [id])
+  films        Film[]
+  starships    Starship[]
+  vehicles     Vehicle[]
+}
+
+model Planet {
+  id              Int       @id
+  name            String
+  diameter        Int?
+  rotation_period Int?
+  orbital_period  Int?
+  gravity         String?
+  population      Float?
+  climates        String
+  terrains        String
+  surface_water   Float?
+  created         DateTime
+  edited          DateTime
+  people          Person[]
+  films           Film[]
+  Species         Species[]
+}
+
+model Species {
+  id               Int      @id
+  name             String
+  classification   String
+  designation      String
+  average_height   Float?
+  average_lifespan Int?
+  eye_colors       String
+  hair_colors      String
+  skin_colors      String
+  language         String
+  created          DateTime
+  edited           DateTime
+  people           Person[]
+  films            Film[]
+  homeworld_id     Int?
+  homeworld        Planet?  @relation(fields: [homeworld_id], references: [id])
+}
+
+model Vehicle {
+  id                     Int      @id
+  name                   String
+  model                  String
+  vehicle_class          String
+  manufacturers          String
+  cost_in_credits        Float?
+  length                 Float?
+  crew                   String
+  passengers             String
+  max_atmosphering_speed Int?
+  cargo_capacity         Float?
+  consumables            String
+  created                DateTime
+  edited                 DateTime
+  pilots                 Person[]
+  films                  Film[]
+}
+
+model Starship {
+  id                     Int      @id
+  name                   String
+  model                  String
+  starship_class         String
+  manufacturers          String
+  cost_in_credits        Float?
+  length                 Float?
+  crew                   String
+  passengers             String
+  max_atmosphering_speed Int?
+  hyperdrive_rating      Float?
+  MGLT                   Int?
+  cargo_capacity         Float?
+  consumables            String
+  created                DateTime
+  edited                 DateTime
+  pilots                 Person[]
+  films                  Film[]
+}

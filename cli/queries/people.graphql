@@ -1,0 +1,45 @@
+{
+  allPeople(first: 100) {
+    pageInfo {
+      hasNextPage
+    }
+    people {
+      id
+      name
+      birthYear
+      eyeColor
+      gender
+      hairColor
+      height
+      mass
+      skinColor
+      homeworld {
+        id
+      }
+      species {
+        id
+      }
+      created
+      edited
+      filmConnection {
+        totalCount
+        films {
+          id
+        }
+      }
+      starshipConnection {
+        totalCount
+        starships {
+          id
+        }
+      }
+
+      vehicleConnection {
+        totalCount
+        vehicles {
+          id
+        }
+      }
+    }
+  }
+}

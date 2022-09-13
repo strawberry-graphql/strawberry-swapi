@@ -1,0 +1,24 @@
+{
+  allFilms(first: 1) {
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+    films {
+      id
+    }
+  }
+  fromSecond: allFilms(first: 1, after: "YXJyYXljb25uZWN0aW9uOjA=") {
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+    films {
+      id
+    }
+  }
+}

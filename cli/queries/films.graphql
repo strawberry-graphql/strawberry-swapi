@@ -1,0 +1,48 @@
+{
+  allFilms(first: 100) {
+    pageInfo {
+      hasNextPage
+    }
+    films {
+      title
+      episodeID
+      openingCrawl
+      director
+      producers
+      releaseDate
+      id
+      created
+      edited
+      speciesConnection {
+        totalCount
+        species {
+          id
+        }
+      }
+      starshipConnection {
+        totalCount
+        starships {
+          id
+        }
+      }
+      vehicleConnection {
+        totalCount
+        vehicles {
+          id
+        }
+      }
+      planetConnection {
+        totalCount
+        planets {
+          id
+        }
+      }
+      characterConnection(first: 100) {
+        totalCount
+        characters {
+          id
+        }
+      }
+    }
+  }
+}

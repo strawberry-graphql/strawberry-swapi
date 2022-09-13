@@ -1,0 +1,37 @@
+{
+  allStarships(first: 100) {
+    pageInfo {
+      hasNextPage
+    }
+    starships {
+      id
+      name
+      model
+      starshipClass
+      hyperdriveRating
+      MGLT
+      manufacturers
+      costInCredits
+      length
+      crew
+      passengers
+      maxAtmospheringSpeed
+      cargoCapacity
+      consumables
+      created
+      edited
+      pilotConnection {
+        totalCount
+        pilots {
+          id
+        }
+      }
+      filmConnection(first: 100) {
+        totalCount
+        films {
+          id
+        }
+      }
+    }
+  }
+}

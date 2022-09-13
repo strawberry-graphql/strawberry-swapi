@@ -1,25 +1,28 @@
-import uvicorn
-from starlette.applications import Starlette
-from strawberry.asgi import GraphQL
-
+from fastapi import FastAPI
+from prisma import Prisma
 from schema import schema
-from tables import database
 
-app = Starlette()
-app.debug = False
+from strawberry.fastapi import GraphQLRouter
 
-app.add_route("/graphql", GraphQL(schema))
+
+db = Prisma()
+app = FastAPI()
 
 
 @app.on_event("startup")
 async def startup():
-    await database.connect()
+    await db.connect()
 
 
 @app.on_event("shutdown")
 async def shutdown():
-    await database.disconnect()
+    await db.disconnect()
 
 
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000, access_log=False)
+async def get_context():
+    return {"db": db}
+
+
+graphql_app = GraphQLRouter(schema, context_getter=get_context)
+
+app.include_router(graphql_app, prefix="/graphql")

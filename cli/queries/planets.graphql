@@ -1,0 +1,33 @@
+{
+  allPlanets(first: 100) {
+    pageInfo {
+      hasNextPage
+    }
+    planets {
+      id
+      name
+      diameter
+      rotationPeriod
+      orbitalPeriod
+      gravity
+      population
+      climates
+      terrains
+      surfaceWater
+      created
+      edited
+      residentConnection(first: 100) {
+        totalCount
+        residents {
+          id
+        }
+      }
+      filmConnection(first: 100) {
+        totalCount
+        films {
+          id
+        }
+      }
+    }
+  }
+}
