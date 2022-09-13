@@ -1,4 +1,4 @@
-FROM python:3.10
+FROM python:3.10-slim
 
 # install PDM
 RUN pip install -U pip setuptools wheel
@@ -11,7 +11,7 @@ COPY . /project
 WORKDIR /project
 RUN pdm install --prod --no-lock --no-editable
 
-EXPOSE 4000
+EXPOSE 8080
 STOPSIGNAL SIGINT
 
 CMD ["pdm", "prod-server"]
