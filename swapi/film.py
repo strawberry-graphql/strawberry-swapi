@@ -20,8 +20,7 @@ if TYPE_CHECKING:
 
 
 @strawberry.type
-class FilmSpeciesEdge(SpeciesEdge):
-    ...
+class FilmSpeciesEdge(SpeciesEdge): ...
 
 
 @strawberry.type
@@ -33,8 +32,7 @@ class FilmSpeciesConnection:
 
 
 @strawberry.type
-class FilmStarshipsEdge(StarshipsEdge):
-    ...
+class FilmStarshipsEdge(StarshipsEdge): ...
 
 
 @strawberry.type
@@ -46,8 +44,7 @@ class FilmStarshipsConnection:
 
 
 @strawberry.type
-class FilmVehiclesEdge(VehiclesEdge):
-    ...
+class FilmVehiclesEdge(VehiclesEdge): ...
 
 
 @strawberry.type
@@ -59,8 +56,7 @@ class FilmVehiclesConnection:
 
 
 @strawberry.type
-class FilmPlanetsEdge(PlanetsEdge):
-    ...
+class FilmPlanetsEdge(PlanetsEdge): ...
 
 
 @strawberry.type
