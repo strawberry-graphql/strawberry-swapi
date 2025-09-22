@@ -16,8 +16,7 @@ from .vehicles import Vehicle, VehiclesEdge
 
 
 @strawberry.type
-class PersonFilmsEdge(FilmsEdge):
-    ...
+class PersonFilmsEdge(FilmsEdge): ...
 
 
 @strawberry.type
@@ -29,8 +28,7 @@ class PersonFilmsConnection:
 
 
 @strawberry.type
-class PersonStarshipsEdge(StarshipsEdge):
-    ...
+class PersonStarshipsEdge(StarshipsEdge): ...
 
 
 @strawberry.type
@@ -42,8 +40,7 @@ class PersonStarshipsConnection:
 
 
 @strawberry.type
-class PersonVehiclesEdge(VehiclesEdge):
-    ...
+class PersonVehiclesEdge(VehiclesEdge): ...
 
 
 @strawberry.type
