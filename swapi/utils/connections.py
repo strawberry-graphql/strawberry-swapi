@@ -64,7 +64,7 @@ async def get_connection_object(
     first: int | None = strawberry.UNSET,
     last: int | None = strawberry.UNSET,
     attribute_name: str | None = None,
-    additional_filters: dict[str, Any] | None = None
+    additional_filters: dict[str, Any] | None = None,
 ):
     """Returns a ConnectionType instance based on EdgeType and the passed params.
 
