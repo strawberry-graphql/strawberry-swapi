@@ -10,7 +10,6 @@ from .importer import Importer
 from .utils.query import query
 from .utils.wait_for_port import wait_for_port
 
-
 app = typer.Typer()
 
 
