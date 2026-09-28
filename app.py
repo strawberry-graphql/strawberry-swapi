@@ -5,7 +5,6 @@ from schema import schema
 
 from strawberry.fastapi import GraphQLRouter
 
-
 db = Prisma()
 app = FastAPI()
 
