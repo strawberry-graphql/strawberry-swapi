@@ -13,7 +13,6 @@ from .planets import Planet
 from .utils.connections import get_connection_resolver
 from .utils.datetime import format_datetime
 
-
 if TYPE_CHECKING:
     from .film import Film
     from .people import Person
