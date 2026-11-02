@@ -1,6 +1,5 @@
 from pathlib import Path
 
-
 HERE = Path(__file__).parent
 
 REFERENCE_API_URL = "https://swapi-graphql.netlify.app/.netlify/functions/index"

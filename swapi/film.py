@@ -14,7 +14,6 @@ from .utils.connections import get_connection_resolver
 from .utils.datetime import format_datetime
 from .vehicles import Vehicle, VehiclesEdge
 
-
 if TYPE_CHECKING:
     from .people import Person
 
